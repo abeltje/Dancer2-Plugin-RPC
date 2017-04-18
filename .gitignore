@@ -1,0 +1,9 @@
+.*.swp
+t/logs
+blib/
+pm_to_blib
+cover_db/
+MYMETA.*
+Makefile
+Makefile.bak
+example/local

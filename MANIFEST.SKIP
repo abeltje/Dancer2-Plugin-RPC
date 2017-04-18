@@ -1,0 +1,10 @@
+\.git/
+example/local
+\..*\.swp
+pm_to_blib
+blib/
+cover_db/
+.gitignore
+.gitattribute
+Makefile$
+MYMETA\.
