@@ -44,7 +44,13 @@ sub build_dispatch_table {
         @dispatch{keys %$pkg_dispatch} = @{$pkg_dispatch}{keys %$pkg_dispatch};
     }
 
-    $app->log(debug => "[dispatch_table_from_pod]->", \%dispatch);
+    my $dispatch_dump = do {
+        require Data::Dumper;
+        local ($Data::Dumper::Indent, $Data::Dumper::Terse, $Data::Dumper::Sortkeys) = (0, 1, 1);
+        Data::Dumper::Dumper(\%dispatch);
+    };
+
+    $app->log(debug => "[dispatch_table_from_pod]->", $dispatch_dump);
     return \%dispatch;
 }
 
