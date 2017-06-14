@@ -1,5 +1,6 @@
 \.git/
 example/local
+example/example.+
 \..*\.swp
 pm_to_blib
 blib/
