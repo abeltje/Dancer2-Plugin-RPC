@@ -7,6 +7,7 @@ ex/MyBogusApp.pm
 ex/MyPoderrorApp.pm
 example/bin/app.psgi
 example/bin/do-rpc
+example/bin/example.pl
 example/config.yml
 example/cpanfile
 example/cpanfile.snapshot

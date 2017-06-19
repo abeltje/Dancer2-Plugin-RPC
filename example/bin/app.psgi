@@ -3,10 +3,7 @@ use strict;
 
 use FindBin;
 use lib "$FindBin::Bin/../lib";
-
-use Dancer2;
+use lib "$FindBin::Bin/../../lib";
 
 use Example;
-
-dance();
-#Example->to_app();
+Example->to_app();
