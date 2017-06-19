@@ -23,8 +23,9 @@ WriteMakefile(
     },
 
     BUILD_REQUIRES => {
-        'Test::More'  => '0.88', # done_testing()
-        'Test::Fatal' => '0.010',
+        'Test::More'       => '0.88',    # done_testing()
+        'Test::Fatal'      => '0.010',
+        'Test::NoWarnings' => '1.04',
     },
 
     MIN_PERL_VERSION => '5.010001',
