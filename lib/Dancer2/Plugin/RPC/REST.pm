@@ -12,6 +12,7 @@ use Dancer2::RPCPlugin::CallbackResult::Factory;
 use Dancer2::RPCPlugin::DispatchItem;
 use Dancer2::RPCPlugin::DispatchMethodList;
 use Dancer2::RPCPlugin::ErrorResponse;
+use Dancer2::RPCPlugin::FlattenData;
 
 use JSON;
 use Params::Validate ':all';
@@ -95,8 +96,18 @@ sub restrpc {
                 )->as_restrpc_error;
             }
             if (blessed($response) && $response->can('as_restrpc_error')) {
-               $response = $response->as_restrpc_error;
+                $response = $response->as_restrpc_error;
             }
+            elsif (blessed($response)) {
+                require Data::Dumper;
+                local ($Data::Dumper::Indent, $Data::Dumper::Terse, $Data::Dumper::Sortkeys) = (0, 1, 1);
+                $response = error_response(
+                    error_code    => 500,
+                    error_message => "An object was returned",
+                    error_data    => Data::Dumper::Dumper($response),
+                )->as_restrpc_error;
+            }
+
         }
 
         $response = { RESULT => $response } if !ref($response);

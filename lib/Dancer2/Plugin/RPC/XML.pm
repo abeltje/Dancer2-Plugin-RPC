@@ -14,6 +14,7 @@ use Dancer2::RPCPlugin::DispatchMethodList;
 use Params::Validate ':all';
 use RPC::XML;
 use RPC::XML::ParserFactory;
+use Scalar::Util 'blessed';
 
 plugin_keywords 'xmlrpc';
 
@@ -90,11 +91,15 @@ sub xmlrpc {
                 $code_wrapper->($handler, $package, $method_name, @method_args);
             };
 
+            $dsl->app->log(debug => "[handling_xmlrpc_call_response] ", $response);
             if (my $error = $@) {
                 $response = {
                     faultCode   => 500,
                     faultString => $error,
                 };
+            }
+            if (blessed($response) && $response->can('as_xmlrpc_fault')) {
+                $response = $response->as_xmlrpc_fault;
             }
         }
         return xmlrpc_response($dsl, $response);

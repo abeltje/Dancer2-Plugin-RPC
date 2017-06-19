@@ -55,7 +55,7 @@ Returns a list of all known methods.
 =cut
 
 sub do_methodlist {
-    my %args = %{$_[1]};
+    my %args = ref($_[1]) eq 'HASH' ? %{$_[1]} : ();
     while (my ($k, $v) = each %args) {
         delete $args{$k} if $k ne 'plugin';
     }

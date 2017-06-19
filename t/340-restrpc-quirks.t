@@ -2,6 +2,7 @@
 use strict;
 
 use Test::More;
+use Test::NoWarnings ();
 use Plack::Test;
 
 use Dancer2::RPCPlugin::ErrorResponse;
@@ -35,6 +36,33 @@ subtest "RESTRPC return ErrorResponse" => sub {
     ) or diag(explain($response));
 };
 
+subtest "RESTRPC codewrapper returns an object" => sub {
+    our $CodeWrapped = sub {
+        return bless {}, 'AnyClass';
+    };
+    my $request = HTTP::Request->new(
+        POST => 'endpoint/ping',
+        [
+            'Content-type' => 'application/json',
+            'Accept'       => 'application/json',
+        ]
+    );
+
+    my $response = $tester->request($request);
+    my $response_error = decode_json($response->content)->{error};
+    is_deeply(
+        $response_error,
+        {
+            code    => 500,
+            message => 'An object was returned',
+            data    => "bless( {}, 'AnyClass' )",
+        },
+        "::ErrorResponse was processed"
+    ) or diag(explain($response));
+};
+
+Test::NoWarnings::had_no_warnings();
+$Test::NoWarnings::do_end_test = 0;
 done_testing();
 
 BEGIN {

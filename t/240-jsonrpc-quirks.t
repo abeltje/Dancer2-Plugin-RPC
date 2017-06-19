@@ -10,7 +10,8 @@ use JSON;
 my $app = MyJSONRPCApp->to_app();
 my $tester = Plack::Test->create($app);
 
-subtest "JSONRPC multirequest" => sub {
+{
+    note("JSONRPC multirequest");
     my $request = HTTP::Request->new(
         POST => '/endpoint',
         [
@@ -52,9 +53,10 @@ subtest "JSONRPC multirequest" => sub {
         ],
         "multi-request (special jsonrpc feature)"
     ) or diag(explain($response));
-};
+}
 
-subtest "JSONRPC fire&forget" => sub {
+{
+    note("JSONRPC fire&forget");
     my $request = HTTP::Request->new(
         POST => '/endpoint',
         [
@@ -67,9 +69,10 @@ subtest "JSONRPC fire&forget" => sub {
     my $response = $tester->request($request);
     is($response->status_line, "202 Accepted", "Accepted")
         or diag(explain($response));
-};
+}
 
-subtest "JSONRPC fire&forget error" => sub {
+{
+    note("JSONRPC fire&forget error");
     my $request = HTTP::Request->new(
         POST => '/endpoint',
         [
@@ -82,7 +85,7 @@ subtest "JSONRPC fire&forget error" => sub {
     my $response = $tester->request($request);
     is($response->status_line, "202 Accepted", "Accepted")
         or diag(explain($response));
-};
+}
 
 done_testing();
 

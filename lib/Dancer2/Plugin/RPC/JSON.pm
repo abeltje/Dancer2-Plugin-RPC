@@ -11,7 +11,9 @@ our $VERSION = Dancer2::RPCPlugin->VERSION;
 use Dancer2::RPCPlugin::CallbackResult::Factory;
 use Dancer2::RPCPlugin::DispatchItem;
 use Dancer2::RPCPlugin::DispatchMethodList;
+use Dancer2::RPCPlugin::FlattenData;
 use JSON;
+use Scalar::Util 'blessed';
 
 plugin_keywords 'jsonrpc';
 
@@ -94,7 +96,7 @@ sub jsonrpc {
                 $code_wrapper->($handler, $package, $method_name, @method_args);
             };
 
-            $dsl->app->log(debug => "[handeled_jsonrpc_call] ", $result);
+            $dsl->app->log(debug => "[handling_jsonrpc_call_response] ", $result);
             if (my $error = $@) {
                 push @responses, jsonrpc_error_response(
                     500,
@@ -103,25 +105,37 @@ sub jsonrpc {
                 );
                 next;
             }
-            push @responses, {
-                jsonrpc => '2.0',
-                result => $result,
-                exists $request->{id}
-                    ? (id => $request->{id})
-                    : (),
-            };
+
+            if (blessed($result) && $result->can('as_jsonrpc_error')) {
+                my $jsonrpc_error = $result->as_jsonrpc_error;
+                push @responses, jsonrpc_error_response(
+                    $jsonrpc_error->{error}{code},
+                    $jsonrpc_error->{error}{message},
+                    $request->{id}
+                );
+            }
+            else {
+                if (blessed($result)) {
+                    $result = flatten_data($result);
+                }
+
+                push @responses, jsonrpc_response($request->{id}, $result);
+            }
+            $dsl->app->log(debug => "[pushed_response($method_name)]: ", $responses[-1]);
         }
 
         # create response
         my $response;
         if (@responses == 1) {
-            if (!exists $responses[0]->{id}) {
+            if (!defined $responses[0]->{id}) {
                 $plugin->app->response->status('accepted');
             }
-            $response = encode_json($responses[0]);
+            else {
+                $response = encode_json($responses[0]);
+            }
         }
         else {
-            $response = encode_json(\@responses);
+            $response = encode_json([grep {defined($_->{id})} @responses]);
         }
 
         $dsl->app->response->content_type('application/json');
@@ -139,6 +153,7 @@ sub jsonrpc {
 
 sub unjson {
     my ($body) = @_;
+    return if !$body;
 
     my @requests;
     my $unjson = decode_json($body);
@@ -149,6 +164,16 @@ sub unjson {
         @requests = @$unjson;
     }
     return @requests;
+}
+
+sub jsonrpc_response {
+    my ($id, $data) = @_; 
+
+    return {
+        jsonrpc => '2.0',
+        id      => $id,
+        result  => $data,
+    };  
 }
 
 sub jsonrpc_error_response {
@@ -323,6 +348,10 @@ actual sub-name in the current package.
 =head2 unjson
 
 Deserializes the string as Perl-datastructure.
+
+=head2 jsonrpc_response
+
+Returns a jsonrpc response as a hashref.
 
 =head2 jsonrpc_error_response
 
