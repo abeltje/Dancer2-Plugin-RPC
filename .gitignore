@@ -1,4 +1,5 @@
 .*.swp
+tags
 t/logs
 blib/
 pm_to_blib
@@ -10,3 +11,4 @@ example/local
 example/carton.lock
 example/cpanfile.snapshot
 example/example.*
+example/logs

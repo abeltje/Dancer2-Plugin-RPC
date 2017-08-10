@@ -23,8 +23,9 @@ WriteMakefile(
     },
 
     BUILD_REQUIRES => {
+        'Test::Fatal'      => '0.01',
+        'Test::MockObject' => '1,20',
         'Test::More'       => '0.88',    # done_testing()
-        'Test::Fatal'      => '0.010',
         'Test::NoWarnings' => '1.04',
     },
 
@@ -35,11 +36,11 @@ WriteMakefile(
             version    => 2,
         },
         'resources' => {
-            homepage   => "https://github.com/abeltje/Dancer-Plugin-RPC",
+            homepage   => "https://github.com/abeltje/Dancer2-Plugin-RPC",
             repository => {
                 type   => "git",
-                url    => "git://github.com/abeltje/Dancer-Plugin-RPC.git",
-                web    => "https://github.com/abeltje/Dancer-Plugin-RPC",
+                url    => "git://github.com/abeltje/Dancer2-Plugin-RPC.git",
+                web    => "https://github.com/abeltje/Dancer2-Plugin-RPC",
             },
 #            x_IRC      => "irc://irc.perl.org/#amsterdam.pm",
         },
