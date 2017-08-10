@@ -10,6 +10,8 @@ our $VERSION = Dancer2::RPCPlugin->VERSION;
 use Dancer2::RPCPlugin::CallbackResult::Factory;
 use Dancer2::RPCPlugin::DispatchItem;
 use Dancer2::RPCPlugin::DispatchMethodList;
+use Dancer2::RPCPlugin::ErrorResponse;
+use Dancer2::RPCPlugin::FlattenData;
 
 use Params::Validate ':all';
 use RPC::XML;
@@ -50,15 +52,16 @@ sub xmlrpc {
         if ($dsl->app->request->content_type ne 'text/xml') {
             $dsl->pass();
         }
-        $dsl->app->log(debug => "[handle_xmlrpc_call] Processing: ", $dsl->app->request->body);
+        $dsl->app->log(debug => "[handle_xmlrpc_request] Processing: ", $dsl->app->request->body);
 
+        local $RPC::XML::ENCODING = $RPC::XML::ENCODING ='UTF-8';
         my $p = RPC::XML::ParserFactory->new();
-
         my $request = $p->parse($dsl->app->request->body);
         my $method_name = $request->name;
-        $dsl->app->log(debug => "[handle_xmlrpc_call] $method_name ", $request->args);
+        $dsl->app->log(debug => "[handle_xmlrpc_call($method_name)] ", $request->args);
 
         if (! exists $dispatcher->{$method_name}) {
+            $dsl->app->log(warning => "$endpoint/#$method_name not found, pass()");
             $dsl->pass();
         }
 
@@ -72,15 +75,23 @@ sub xmlrpc {
         };
 
         if (my $error = $@) {
-            $response = {
-                faultCode   => 500,
-                faultString => $error,
-            };
+            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+                error_code => 500,
+                error_message => $error,
+            )->as_xmlrpc_fault;
             return xmlrpc_response($dsl, $response);
         }
-        if (! $continue->success) {
-            $response->{faultCode} = $continue->error_code;
-            $response->{faultString} = $continue->error_message;
+        if (!blessed($continue) || !$continue->isa('Dancer2::RPCPlugin::CallbackResult')) {
+            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+                error_code    => 500,
+                error_message => "Internal error: 'callback_result' wrong class " . blessed($continue),
+            )->as_xmlrpc_fault;
+        }
+        elsif (blessed($continue) && !$continue->success) {
+            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+                error_code    => $continue->error_code,
+                error_message => $continue->error_message,
+            )->as_xmlrpc_fault;
         }
         else {
             my Dancer2::RPCPlugin::DispatchItem $di = $dispatcher->{$method_name};
@@ -91,15 +102,18 @@ sub xmlrpc {
                 $code_wrapper->($handler, $package, $method_name, @method_args);
             };
 
-            $dsl->app->log(debug => "[handling_xmlrpc_call_response] ", $response);
+            $dsl->app->log(debug => "[handling_xmlrpc_response($method_name)] ", $response);
             if (my $error = $@) {
-                $response = {
-                    faultCode   => 500,
-                    faultString => $error,
-                };
+                $response = Dancer2::RPCPlugin::ErrorResponse->new(
+                    error_code => 500,
+                    error_message => $error,
+                )->as_xmlrpc_fault;
             }
             if (blessed($response) && $response->can('as_xmlrpc_fault')) {
                 $response = $response->as_xmlrpc_fault;
+            }
+            elsif (blessed($response)) {
+                $response = flatten_data($response);
             }
         }
         return xmlrpc_response($dsl, $response);

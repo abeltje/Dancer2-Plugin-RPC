@@ -38,7 +38,7 @@ subtest "RESTRPC return ErrorResponse" => sub {
 
 subtest "RESTRPC codewrapper returns an object" => sub {
     our $CodeWrapped = sub {
-        return bless {}, 'AnyClass';
+        return bless {data => 42}, 'AnyClass';
     };
     my $request = HTTP::Request->new(
         POST => 'endpoint/ping',
@@ -49,15 +49,11 @@ subtest "RESTRPC codewrapper returns an object" => sub {
     );
 
     my $response = $tester->request($request);
-    my $response_error = decode_json($response->content)->{error};
+    my $response_data = decode_json($response->content);
     is_deeply(
-        $response_error,
-        {
-            code    => 500,
-            message => 'An object was returned',
-            data    => "bless( {}, 'AnyClass' )",
-        },
-        "::ErrorResponse was processed"
+        $response_data,
+        { data => 42 },
+        "flatten_data() was called"
     ) or diag(explain($response));
 };
 

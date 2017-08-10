@@ -52,22 +52,23 @@ sub restrpc {
         if ($dsl->app->request->content_type ne 'application/json') {
             $dsl->pass();
         }
+        $dsl->app->log(debug => "[handle_restrpc_request] Processing: ", $dsl->app->request->body);
 
         my $request = $dsl->app->request;
         my $method_args = $request->body
             ? from_json($request->body)
             : undef;
         my ($method_name) = $request->path =~ m{$base_url/(\w+)};
-        $dsl->app->log(debug => "[handle_restrpc_call] $method_name ", $method_args);
+        $dsl->app->log(debug => "[handle_restrpc_call($method_name)] ", $method_args);
 
         $dsl->response->content_type('application/json');
+        my $response;
         my Dancer2::RPCPlugin::CallbackResult $continue = eval {
             $callback
                 ? $callback->($request, $method_name, $method_args)
                 : callback_success();
         };
 
-        my $response;
         if (my $error = $@) {
             $response = Dancer2::RPCPlugin::ErrorResponse->new(
                 error_code    => 500,
@@ -89,6 +90,7 @@ sub restrpc {
                 $code_wrapper->($handler, $package, $method_name, $method_args);
             };
 
+            $dsl->app->log(debug => "[handling_restrpc_response($method_name)] ", $response);
             if (my $error = $@) {
                 $response = Dancer2::RPCPlugin::ErrorResponse->new(
                     error_code => 500,
@@ -99,15 +101,8 @@ sub restrpc {
                 $response = $response->as_restrpc_error;
             }
             elsif (blessed($response)) {
-                require Data::Dumper;
-                local ($Data::Dumper::Indent, $Data::Dumper::Terse, $Data::Dumper::Sortkeys) = (0, 1, 1);
-                $response = error_response(
-                    error_code    => 500,
-                    error_message => "An object was returned",
-                    error_data    => Data::Dumper::Dumper($response),
-                )->as_restrpc_error;
+                $response = flatten_data($response);
             }
-
         }
 
         $response = { RESULT => $response } if !ref($response);

@@ -12,6 +12,7 @@ use Dancer2::RPCPlugin::CallbackResult::Factory;
 use Dancer2::RPCPlugin::DispatchItem;
 use Dancer2::RPCPlugin::DispatchMethodList;
 use Dancer2::RPCPlugin::FlattenData;
+
 use JSON;
 use Scalar::Util 'blessed';
 
@@ -34,11 +35,13 @@ sub jsonrpc {
         methods  => [ sort keys %{ $dispatcher } ],
     );
 
-    my $code_wrapper = $config->{code_wrapper} // sub {
-        my $code = shift;
-        my $pkg  = shift;
-        $code->(@_);
-    };
+    my $code_wrapper = $config->{code_wrapper}
+        ? $config->{code_wrapper}
+        : sub {
+            my $code = shift;
+            my $pkg  = shift;
+            $code->(@_);
+        };
     my $callback = $config->{callback};
 
     $plugin->app->log(debug => "Starting handler build: ", $lister);
@@ -47,15 +50,18 @@ sub jsonrpc {
         if ($plugin->app->request->content_type ne 'application/json') {
             $dsl->pass();
         }
+        $dsl->app->log(debug => "[handle_jsonrpc_request] Processing: ", $dsl->app->request->body);
 
         my @requests = unjson($plugin->app->request->body);
 
+        $dsl->app->response->content_type('application/json');
         my @responses;
         for my $request (@requests) {
             my $method_name = $request->{method};
-            $dsl->app->log(debug => "[handle_jsonrpc_call] $method_name ", $request);
+            $dsl->app->log(debug => "[handle_jsonrpc_call($method_name)] ", $request);
 
             if (!exists $dispatcher->{$method_name}) {
+                $dsl->app->log(warning => "$endpoint/#$method_name not found.");
                 push @responses, jsonrpc_error_response(
                     -32601,
                     "Method '$method_name' not found",
@@ -79,11 +85,19 @@ sub jsonrpc {
                 );
                 next;
             }
-            if (!$continue->success) {
+            if (!blessed($continue) || !$continue->isa('Dancer2::RPCPlugin::CallbackResult')) {
+                push @responses, jsonrpc_error_response(
+                    -32603,
+                    "Internal error: 'callback_result' wrong class " . blessed($continue),
+                    $request->{id},
+                );
+                next;
+            }
+            elsif (blessed($continue) && !$continue->success) {
                 push @responses, jsonrpc_error_response(
                     $continue->error_code,
                     $continue->error_message,
-                    $request->{id}
+                    $request->{id},
                 );
                 next;
             }
@@ -138,7 +152,6 @@ sub jsonrpc {
             $response = encode_json([grep {defined($_->{id})} @responses]);
         }
 
-        $dsl->app->response->content_type('application/json');
         return $response;
     };
 
@@ -167,13 +180,13 @@ sub unjson {
 }
 
 sub jsonrpc_response {
-    my ($id, $data) = @_; 
+    my ($id, $data) = @_;
 
     return {
         jsonrpc => '2.0',
         id      => $id,
         result  => $data,
-    };  
+    };
 }
 
 sub jsonrpc_error_response {

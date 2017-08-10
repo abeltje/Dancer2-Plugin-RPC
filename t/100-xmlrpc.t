@@ -24,11 +24,12 @@ subtest "XMLRPC ping (POST)" => sub {
         EOXML
     );
     my $response = $tester->request($request);
+    my $value = $p->parse($response->decoded_content)->value->value;
     is_deeply(
-        $p->parse($response->decoded_content)->value->value,
+        $value,
         'pong',
         "ping"
-    );
+    ) or diag(explain($value));
 };
 
 subtest "XMLRPC ping (GET)" => sub {
