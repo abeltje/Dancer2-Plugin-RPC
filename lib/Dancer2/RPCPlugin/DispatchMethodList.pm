@@ -124,7 +124,7 @@ sub list_methods {
     my $self = shift;
     my ($protocol) = validate_pos(
         @_,
-        {default => 'any', regex => qr/^any|jsonrpc|restrpc|xmlrpc$/, optional => 1}
+        {default => 'any', regex => qr/^(?:any|(?:json|rest|xml)rpc)$/, optional => 1}
     );
     if ($protocol eq 'any') {
         return $self->{protocol};
