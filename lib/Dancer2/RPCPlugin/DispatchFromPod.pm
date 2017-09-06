@@ -13,7 +13,7 @@ has plugin => (
 );
 has label => (
     is       => 'ro',
-    isa      => sub { $_[0] =~ qr/^(?:jsonrpc|xmlrpc)$/ },
+    isa      => sub { $_[0] =~ qr/^(?:jsonrpc|restrpc|xmlrpc)$/ },
     required => 1,
 );
 has packages => (
@@ -46,11 +46,11 @@ sub build_dispatch_table {
 
     my $dispatch_dump = do {
         require Data::Dumper;
-        local ($Data::Dumper::Indent, $Data::Dumper::Terse, $Data::Dumper::Sortkeys) = (0, 1, 1);
+        local ($Data::Dumper::Indent, $Data::Dumper::Sortkeys, $Data::Dumper::Terse) = (0, 1, 1);
         Data::Dumper::Dumper(\%dispatch);
     };
+    $app->log(debug => "[dispatch_table_from_pod]->{$self->label} ", $dispatch_dump);
 
-    $app->log(debug => "[dispatch_table_from_pod]->", $dispatch_dump);
     return \%dispatch;
 }
 
@@ -83,7 +83,7 @@ sub _parse_file {
         while (!$ntoken->can('text')) { $ntoken = $p->get_token; }
 
         $app->log(debug => "=for-token $label => ", $ntoken->text);
-        my ($if_name, $code_name) = split " ", $ntoken->text;
+        my ($if_name, $code_name, $ep_name) = split " ", $ntoken->text;
         if (!$code_name) {
             $app->log(
                 error => sprintf(
@@ -137,6 +137,8 @@ This parses the text of the given packages, looking for Dispatch Table hints:
 
     =for xmlrpc rpc-method real-sub
     
+    =for restrpc rpc-method real-sub
+    
     =for jsonrpc rpc-method real-sub
 
 =head2 Dancer2::RPCPlugin::DispatchFromPod->new(%parameters)
@@ -145,9 +147,9 @@ This parses the text of the given packages, looking for Dispatch Table hints:
 
 =over
 
-=item plugin => An intance of the current plugin
+=item plugin => An instance of the current plugin
 
-=item label => <jsonrpc|xmlrpc>
+=item label => <jsonrpc|restrpc|xmlrpc>
 
 =item packages => a list (ArrayRef) of package names to be parsed
 

@@ -11,7 +11,7 @@ has plugin => (
 );
 has label => (
     is       => 'ro',
-    isa      => sub { $_[0] =~ qr/^(?:jsonrpc|xmlrpc)$/ },
+    isa      => sub { $_[0] =~ qr/^(?:jsonrpc|restrpc|xmlrpc)$/ },
     required => 1,
 );
 has config => (
@@ -58,10 +58,13 @@ sub build_dispatch_table {
         }
     }
 
-    # we don't want "Encountered CODE ref, using dummy placeholder"
-    # thus we use Data::Dumper::Dumper().
+    my $dispatch_dump = do {
+        require Data::Dumper;
+        local ($Data::Dumper::Indent, $Data::Dumper::Sortkeys, $Data::Dumper::Terse) = (0, 1, 1);
+        Data::Dumper::Dumper(\%dispatch);
+    };
     $app->log(
-        debug => "[build_dispatcher_from_config]->{$self->label} ", $dispatch
+        debug => "[dispatch_table_from_config]->{$self->label} ", $dispatch_dump
     );
 
     return $dispatch;
@@ -98,7 +101,7 @@ Named, list:
 
 =item plugin => $plugin
 
-=item label => <xmlrpc|jsonrpc>
+=item label => <xmlrpc|jsonrpc|jsonrpc>
 
 =item config => $config_from_plugin
 

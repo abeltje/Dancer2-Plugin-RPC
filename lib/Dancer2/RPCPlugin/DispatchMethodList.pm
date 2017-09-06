@@ -13,14 +13,14 @@ Dancer2::RPCPlugin::DispatchMethodList - Class for maintaining a global methodli
     my $methods = Dancer2::RPCPlugin::DispatchMethodList->new();
 
     $methods->set_partial(
-        protocol => <jsonrpc|xmlrpc>,
+        protocol => <jsonrpc|restrpc|xmlrpc>,
         endpoint => </configured>,
         methods  => [ @method_names ],
     );
 
     # Somewhere else
     my $dml = Dancer2::RPCPlugin::DispatchMethodList->new();
-    my $methods = $dml->list_methods(<any|jsonrpc|xmlrpc>);
+    my $methods = $dml->list_methods(<any|jsonrpc|restrpc|xmlrpc>);
 
 =head1 DESCRIPTION
 
@@ -54,7 +54,7 @@ Named, list:
 
 =over
 
-=item protocol => <jsonrpc|xmlrpc>
+=item protocol => <jsonrpc|restrpc|xmlrpc>
 
 =item endpoint => $endpoint
 
