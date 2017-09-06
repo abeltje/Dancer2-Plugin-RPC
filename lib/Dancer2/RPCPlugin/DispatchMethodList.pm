@@ -1,7 +1,9 @@
 package Dancer2::RPCPlugin::DispatchMethodList;
 use warnings;
 use strict;
-use Params::Validate ':all';
+
+use Params::ValidationCompiler 'validation_for';
+use Types::Standard qw/ Str StrMatch ArrayRef Int /;
 
 =head1 NAME
 
@@ -70,15 +72,14 @@ Named, list:
 
 sub set_partial {
     my $self = shift;
-    my $args = validate_with(
-        params => \@_,
-        spec   => {
-            protocol => {regex => qr/^(?:json|rest|xml)rpc$/, optional => 0},
-            endpoint => {regex => qr/^.*$/, optional => 0},
-            methods  => {type => ARRAYREF},
-        },
-    );
-    $self->{protocol}{$args->{protocol}}{$args->{endpoint}} = $args->{methods};
+    my %args = validation_for(
+        params => {
+            protocol => {type => StrMatch[ qr/^(?:json|xml|rest)rpc$/], optional => 0},
+            endpoint => {type => StrMatch[ qr/^.*$/] , optional => 0},
+            methods  => {type => ArrayRef},
+        }
+    )->(@_);
+    $self->{protocol}{$args{protocol}}{$args{endpoint}} = $args{methods};
     return $self;
 }
 
@@ -92,7 +93,7 @@ Positional, list:
 
 =over
 
-=item $protocol => undef || <any|jsonrpc|xmlrpc>
+=item $protocol => undef || <any|jsonrpc|restrpc|xmlrpc>
 
 =back
 
@@ -122,10 +123,14 @@ In case of specified C<$protocol>:
 
 sub list_methods {
     my $self = shift;
-    my ($protocol) = validate_pos(
-        @_,
-        {default => 'any', regex => qr/^(?:any|(?:json|rest|xml)rpc)$/, optional => 1}
-    );
+    my ($protocol) = validation_for(
+        params => [
+            {
+                type => StrMatch [qr/^(?:any|(?:json|rest|xml)rpc)$/],
+                default => 'any',
+            },
+        ]
+    )->(@_);
     if ($protocol eq 'any') {
         return $self->{protocol};
     }

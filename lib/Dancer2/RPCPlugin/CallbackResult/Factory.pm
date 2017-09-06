@@ -2,10 +2,11 @@ package Dancer2::RPCPlugin::CallbackResult::Factory;
 use warnings;
 use strict;
 
-use Params::Validate ':all';
-
 use Exporter 'import';
 our @EXPORT = qw/ callback_success callback_fail /;
+
+use Params::ValidationCompiler 'validation_for';
+use Types::Standard qw/ Int Str /;
 
 =head1 NAME
 
@@ -40,7 +41,7 @@ Returns an instantiated L<Dancer::RPCPlugin::CallbackResult::Success> object.
 =cut
 
 sub callback_success {
-    validate_with(params => \@_, spec => {}, allow_extra => 0); # no args!
+    die "callback_success() does not have arguments\n" if @_ > 1;
     return Dancer2::RPCPlugin::CallbackResult::Success->new();
 }
 
@@ -61,14 +62,12 @@ Returns an instantiated L<Dancer::RPCPlugin::CallbackResult::Fail> object.
 =cut
 
 sub callback_fail {
-    my %data = validate_with(
-        params => \@_,
-        spec   => {
-            error_code    => {regex => qr/^[+-]?\d+$/, optional => 0},
-            error_message => {optional => 0},
-        },
-        allow_extra => 0,
-    );
+    my %data = validation_for(
+        params => {
+            error_code    => {optional => 0, type => Int},
+            error_message => {optional => 0, type => Str},
+        }
+    )->(@_);
     return Dancer2::RPCPlugin::CallbackResult::Fail->new(%data);
 }
 

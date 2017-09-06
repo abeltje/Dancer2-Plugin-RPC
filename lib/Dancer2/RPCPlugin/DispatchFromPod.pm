@@ -2,9 +2,10 @@ package Dancer2::RPCPlugin::DispatchFromPod;
 use Moo;
 
 use Dancer2::RPCPlugin::DispatchItem;
-use Params::Validate ':all';
+use Params::ValidationCompiler 'validation_for';
 use Pod::Simple::PullParser;
 use Scalar::Util 'blessed';
+use Types::Standard qw/ StrMatch ArrayRef Object /;
 
 has plugin_object => (
     is       => 'ro',
@@ -61,21 +62,21 @@ sub build_dispatch_table {
 
 sub _parse_file {
     my $self = shift;
-    my $args = validate(
-        @_,
-        {
-            package => { regex => qr/^\w[\w:]*$/ },
-            parser  => { type  => OBJECT },
-        }
-    );
+    my %args = validation_for(
+        params => [
+            package => { type => StrMatch[ qr/^\w[\w:]*$/ ] },
+            parser  => { type  => Object },
+        ]
+    )->(@_);
+
     my $app = $self->plugin_object->app;
 
-    (my $pkg_as_file = "$args->{package}.pm") =~ s{::}{/}g;
+    (my $pkg_as_file = "$args{package}.pm") =~ s{::}{/}g;
     my $pkg_file = $INC{$pkg_as_file};
     use autodie;
     open my $fh, '<', $pkg_file;
 
-    my $p = $args->{parser};
+    my $p = $args{parser};
     $p->set_source($fh);
 
     my $dispatch;
@@ -102,10 +103,10 @@ sub _parse_file {
             );
             next;
         }
-        $app->log(debug => "[build_dispatcher] $args->{package}\::$code_name => $if_name ($ep_name)");
+        $app->log(debug => "[build_dispatcher] $args{package}\::$code_name => $if_name ($ep_name)");
         next if $ep_name ne $self->endpoint;
 
-        my $pkg = $args->{package};
+        my $pkg = $args{package};
         if (my $handler = $pkg->can($code_name)) {
             $dispatch->{$if_name} = Dancer2::RPCPlugin::DispatchItem->new(
                 package => $pkg,

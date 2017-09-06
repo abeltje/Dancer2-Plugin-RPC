@@ -15,7 +15,6 @@ use Dancer2::RPCPlugin::ErrorResponse;
 use Dancer2::RPCPlugin::FlattenData;
 
 use JSON;
-use Params::Validate ':all';
 use Scalar::Util 'blessed';
 
 plugin_keywords 'restrpc';

@@ -91,7 +91,7 @@ Factory function that retuns an instantiated L<Dancer2::RPCPlugin::ErrorResponse
 
 =head3 Responses
 
-An instance or an exception from L<Params::Validate>.
+An instance or an exception from L<Moo>.
 
 =head2 Dancer2::RPCPlugin::ErrorResponse->new(%parameters)
 
@@ -109,7 +109,7 @@ An instance or an exception from L<Params::Validate>.
 
 =head3 Responses
 
-An instance or an exception from L<Params::Validate>.
+An instance or an exception from L<Moo>.
 
 =head2 $er->error_code
 

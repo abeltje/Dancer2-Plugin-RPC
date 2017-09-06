@@ -36,7 +36,7 @@ has package => (
 
 =head1 DESCRIPTION
 
-=head2 Dancer::RPCPlugin::DispatchItem->new(%arguments)
+=head2 Dancer2::RPCPlugin::DispatchItem->new(%arguments)
 
 =head3 Parameters
 

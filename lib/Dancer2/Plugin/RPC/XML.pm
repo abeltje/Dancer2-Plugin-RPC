@@ -13,7 +13,6 @@ use Dancer2::RPCPlugin::DispatchMethodList;
 use Dancer2::RPCPlugin::ErrorResponse;
 use Dancer2::RPCPlugin::FlattenData;
 
-use Params::Validate ':all';
 use RPC::XML;
 use RPC::XML::ParserFactory;
 use Scalar::Util 'blessed';
