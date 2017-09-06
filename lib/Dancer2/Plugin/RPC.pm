@@ -1,7 +1,7 @@
 package Dancer2::Plugin::RPC;
 use v5.10;
 
-our $VERSION = '2.00_00';
+our $VERSION = '2.00_01';
 
 =head1 NAME
 

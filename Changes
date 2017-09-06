@@ -1,0 +1,66 @@
+Changes on 2017-09-06 for repository at:
+  Fetch URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
+  Push  URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
+
+Enjoy!
+
+2.00_01 2017-09-06T22:35:57+02:00 (8aeb723 => abeltje)
+ - (abeltje, 2 seconds ago) Autocommit for distribution
+   Dancer2::Plugin::RPC 2.00_01 (test)
+
+0.00 2017-04-18T21:45:07+02:00 (0206403 => abeltje)
+ - (abeltje, 5 months ago) Initial commit => port of Dancer::Plugin::RPC
+
+ - (abeltje, 5 months ago) Arrange for a clean dump of the dispatch-table.
+ -     Dancer2 gives a warning for items logged that are CODE-refs, we know
+ -     this data-structure contains them, so resolve by dumpering te
+   structure
+ -     ourself.
+
+ - (abeltje, 3 months ago) Help the example application and my development
+ -     carton (lock/snapshot) shouldn't be diffed
+ -     ignore the carton stuff for version control
+
+ - (abeltje, 3 months ago) Add 'Test::NoWarnings' to 'BUILD_REQUIRES'
+
+ - (abeltje, 3 months ago) Update the example app.
+
+ - (abeltje, 3 months ago) Objects returned by the codewrapper will be
+   serialised
+ -     Blessed variables will be (recursively) flattend into a single
+ -     data-structure.
+ -     fix tests, amend tests, add tests
+
+ - (abeltje, 2 months ago) Changes must be part of any distribution
+
+ - (abeltje, 2 months ago) Keep the example in sync with
+   Dancer::Plugin::RPC
+
+ - (abeltje, 4 weeks ago) More syncing between the two versions (Dancer1.3
+   and Dancer2)
+
+ - (abeltje, 4 weeks ago) More bookkeeping...
+
+ - (abeltje, 3 weeks ago) Fix regex for argument validation
+
+ - (abeltje, 4 hours ago) Documentation fixes, complete RESTRPC stuff
+
+ - (abeltje, 2 hours ago) Introduce explicit endpoints for POD-publishing
+ -     - The Dancer2::RPCPlugin::DispatchFromPod class has a new attribute
+ -	 'endpoint', this will be used with the new optional item for
+   endpoint
+ -	 in the POD directive
+ -	- Renamed the 'label' attribute to plugin (sync with the Dancer
+ -	  version) in the Dancer2::RPCPlugin::DispatchFrom* classes
+ -     - Had to rename the 'plugin' attribute to 'plugin_object' in those
+ -	 classes
+
+ - (abeltje, 2 hours ago) Fix agent-identifier in http-client.
+
+ - (abeltje, 46 minutes ago) Use Params::ValidationCompiler rather than
+   Params::Validate
+ -     As of June 2017 the author recommends this change.
+
+ - (abeltje, 37 minutes ago) Update MANIFEST/MANIFEST.SKIP
+
+ - (abeltje, 3 minutes ago) Rename the Plugins back to the Dancer version
