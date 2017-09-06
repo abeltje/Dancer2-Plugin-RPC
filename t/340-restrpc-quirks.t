@@ -65,7 +65,7 @@ BEGIN {
     package MyRESTRPCApp;
     use lib 'ex/';
     use Dancer2;
-    use Dancer2::Plugin::RPC::REST;
+    use Dancer2::Plugin::RPC::RESTRPC;
 
     BEGIN {
         set(log => 'error');

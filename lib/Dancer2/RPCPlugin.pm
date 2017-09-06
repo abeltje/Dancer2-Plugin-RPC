@@ -1,7 +1,7 @@
 package Dancer2::RPCPlugin;
 use Moo::Role;
 
-BEGIN { $Dancer2::RPCPlugin::VERSION = '2.00_00'; }
+BEGIN { require Dancer2::Plugin::RPC; $Dancer2::RPCPlugin::VERSION = Dancer2::Plugin::RPC->VERSION; }
 
 use Dancer2::RPCPlugin::DispatchFromConfig;
 use Dancer2::RPCPlugin::DispatchFromPod;
@@ -12,13 +12,13 @@ use Params::Validate ':all';
 use v5.10;
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
-# returns xmlrpc for Dancer2::Plugin::RPC::XML
-# returns jsonrpc for Dancer2::Plugin::RPC::JSON
-# returns restrpc for Dancer2::Plugin::RPC::REST
+# returns xmlrpc for Dancer2::Plugin::RPC::XMLRPC
+# returns jsonrpc for Dancer2::Plugin::RPC::JSONRPC
+# returns restrpc for Dancer2::Plugin::RPC::RESTRPC
 sub rpcplugin_tag {
     my $full_name = ref($_[0]) ? ref($_[0]) : $_[0];
     (my $proto = $full_name) =~ s/.*:://;
-    return "\L${proto}rpc";
+    return "\L${proto}";
 }
 
 sub dispatch_builder {
@@ -96,7 +96,7 @@ None.
 
 =head3 Responses
 
-    <jsonrpc|xmlrpc>
+    <jsonrpc|restrpc|xmlrpc>
 
 =head2 dispatch_item(%parameters)
 

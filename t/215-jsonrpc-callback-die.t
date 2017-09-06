@@ -44,7 +44,7 @@ BEGIN {
     package MyJSONRPCAppCallbackFail;
     use lib 'ex/';
     use Dancer2;
-    use Dancer2::Plugin::RPC::JSON;
+    use Dancer2::Plugin::RPC::JSONRPC;
     use Dancer2::RPCPlugin::CallbackResult::Factory;
 
     BEGIN { set(log => 'error') }

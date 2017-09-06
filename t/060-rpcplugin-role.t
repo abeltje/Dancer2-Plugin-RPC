@@ -7,20 +7,20 @@ use Test::NoWarnings ();
 
 {
     note('Consume role');
-    my $tst = MyConsumer::REST->new();
-    isa_ok($tst, 'MyConsumer::REST');
+    my $tst = MyConsumer::RESTRPC->new();
+    isa_ok($tst, 'MyConsumer::RESTRPC');
     ok(
         $tst->does('Dancer2::RPCPlugin'),
         ref($tst) . " does Dancer2::RPCPlugin"
     );
-    is(MyConsumer::REST->rpcplugin_tag, 'restrpc', "CLASS->rpcplugin_tag()");
+    is(MyConsumer::RESTRPC->rpcplugin_tag, 'restrpc', "CLASS->rpcplugin_tag()");
     is($tst->rpcplugin_tag, 'restrpc', "INSTANCE->rpcplugin_tag()");
 }
 
 {
     note('Create builder from config');
-    my $tst = MyConsumer::REST->new();
-    isa_ok($tst, 'MyConsumer::REST');
+    my $tst = MyConsumer::RESTRPC->new();
+    isa_ok($tst, 'MyConsumer::RESTRPC');
     my $builder = $tst->dispatch_builder(
         '/endpoint',
         undef,
@@ -43,8 +43,8 @@ use Test::NoWarnings ();
 
 {
     note('Create builder from POD');
-    my $tst = MyConsumer::REST->new();
-    isa_ok($tst, 'MyConsumer::REST');
+    my $tst = MyConsumer::RESTRPC->new();
+    isa_ok($tst, 'MyConsumer::RESTRPC');
     my $builder = $tst->dispatch_builder(
        '/endpoint',
        'pod',
@@ -66,8 +66,8 @@ use Test::NoWarnings ();
 
 {
     note('Dispatch from code');
-    my $tst = MyConsumer::REST->new();
-    isa_ok($tst, 'MyConsumer::REST');
+    my $tst = MyConsumer::RESTRPC->new();
+    isa_ok($tst, 'MyConsumer::RESTRPC');
     my $builder = $tst->dispatch_builder(
         '/endpoint',
         sub {
@@ -101,7 +101,7 @@ done_testing();
 BEGIN {
     use Test::MockObject;
     (my $app = Test::MockObject->new->set_always(log => 1));
-    package MyConsumer::REST;
+    package MyConsumer::RESTRPC;
     use Moo;
     with 'Dancer2::RPCPlugin';
     has app => (is => 'ro', default => sub {$app});

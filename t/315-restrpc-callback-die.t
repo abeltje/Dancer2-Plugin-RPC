@@ -36,7 +36,7 @@ BEGIN {
     package MyRESTRPCAppCallbackFail;
     use lib 'ex/';
     use Dancer2;
-    use Dancer2::Plugin::RPC::REST;
+    use Dancer2::Plugin::RPC::RESTRPC;
     use Dancer2::RPCPlugin::CallbackResult::Factory;
 
     BEGIN { set(log => 'error') }

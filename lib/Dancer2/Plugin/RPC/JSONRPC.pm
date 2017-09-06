@@ -1,4 +1,4 @@
-package Dancer2::Plugin::RPC::JSON;
+package Dancer2::Plugin::RPC::JSONRPC;
 use Dancer2::Plugin;
 use namespace::autoclean;
 

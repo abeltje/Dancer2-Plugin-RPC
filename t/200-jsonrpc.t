@@ -112,7 +112,7 @@ BEGIN {
     package MyJSONRPCApp;
     use lib 'ex/';
     use Dancer2;
-    use Dancer2::Plugin::RPC::JSON;
+    use Dancer2::Plugin::RPC::JSONRPC;
 
     BEGIN { set(log => 'error') }
     jsonrpc '/endpoint' => {

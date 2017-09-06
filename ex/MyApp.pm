@@ -1,8 +1,9 @@
 package MyApp;
 
 use Dancer2;
-use Dancer2::Plugin::RPC::JSON;
-use Dancer2::Plugin::RPC::XML;
+use Dancer2::Plugin::RPC::JSONRPC;
+use Dancer2::Plugin::RPC::RESTRPC;
+use Dancer2::Plugin::RPC::XMLRPC;
 use Dancer2::RPCPlugin::CallbackResult;
 
 BEGIN {
@@ -14,6 +15,12 @@ my $callback = sub {
 };
 
 jsonrpc '/endpoint' => {
+    publish   => 'pod',
+    arguments => [qw/ MyAppCode /],
+    callback  => $callback,
+};
+
+restrpc '/rest' => {
     publish   => 'pod',
     arguments => [qw/ MyAppCode /],
     callback  => $callback,

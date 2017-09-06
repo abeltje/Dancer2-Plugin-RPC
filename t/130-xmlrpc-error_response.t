@@ -70,7 +70,7 @@ BEGIN {
     package MyXMLRPCApp;
     use lib 'ex/';
     use Dancer2;
-    use Dancer2::Plugin::RPC::XML;
+    use Dancer2::Plugin::RPC::XMLRPC;
 
     BEGIN {
         set(log => 'error');

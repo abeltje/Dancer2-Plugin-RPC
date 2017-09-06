@@ -131,9 +131,9 @@ BEGIN {
     package MyAllRPCApp;
     use lib 'ex/';
     use Dancer2;
-    use Dancer2::Plugin::RPC::XML;
-    use Dancer2::Plugin::RPC::REST;
-    use Dancer2::Plugin::RPC::JSON;
+    use Dancer2::Plugin::RPC::XMLRPC;
+    use Dancer2::Plugin::RPC::RESTRPC;
+    use Dancer2::Plugin::RPC::JSONRPC;
 
     BEGIN { set(logger => 'Null') }
     xmlrpc '/endpoint' => {

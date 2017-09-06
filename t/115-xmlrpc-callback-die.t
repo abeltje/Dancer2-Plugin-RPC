@@ -41,7 +41,7 @@ BEGIN {
     package MyXMLRPCAppCallbackFail;
     use lib 'ex/';
     use Dancer2;
-    use Dancer2::Plugin::RPC::XML;
+    use Dancer2::Plugin::RPC::XMLRPC;
     use Dancer2::RPCPlugin::CallbackResult::Factory;
 
     BEGIN { set(log => 'error') }
