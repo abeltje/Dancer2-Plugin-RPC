@@ -32,10 +32,10 @@ sub dispatch_builder {
                     debug => "[build_dispatch_table_from_config]"
                 );
                 my $dispatch_builder = Dancer2::RPCPlugin::DispatchFromConfig->new(
-                    plugin   => $self,
-                    label    => $self->rpcplugin_tag,
-                    config   => $settings,
-                    endpoint => $endpoint,
+                    plugin_object => $self,
+                    plugin        => $self->rpcplugin_tag,
+                    config        => $settings,
+                    endpoint      => $endpoint,
                 );
                 return $dispatch_builder->build_dispatch_table();
             };
@@ -46,9 +46,10 @@ sub dispatch_builder {
                     debug => "[build_dispatch_table_from_pod]"
                 );
                 my $dispatch_builder = Dancer2::RPCPlugin::DispatchFromPod->new(
-                    plugin   => $self,
-                    label    => $self->rpcplugin_tag,
-                    packages => $arguments,
+                    plugin_object => $self,
+                    plugin        => $self->rpcplugin_tag,
+                    packages      => $arguments,
+                    endpoint      => $endpoint,
                 );
                 return $dispatch_builder->build_dispatch_table();
             };

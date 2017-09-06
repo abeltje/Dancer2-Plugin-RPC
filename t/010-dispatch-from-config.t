@@ -25,12 +25,13 @@ my $plugin = Test::MockObject->new->set_always(
     app => $app,
 );
 
-subtest 'Working dispatch table from configuration' => sub {
+{
+    note('Working dispatch table from configuration');
     my $builder = Dancer2::RPCPlugin::DispatchFromConfig->new(
-        plugin   => $plugin,
-        label    => 'xmlrpc',
-        endpoint => '/xmlrpc',
-        config   => {
+        plugin_object => $plugin,
+        plugin        => 'xmlrpc',
+        endpoint      => '/xmlrpc',
+        config        => {
             '/xmlrpc' => {
                 'MyAppCode' => {
                     'system.ping'    => 'do_ping',
@@ -56,49 +57,55 @@ subtest 'Working dispatch table from configuration' => sub {
         },
         "Dispatch from (YAML)-config"
     );
-};
+}
 
-subtest 'Adding non existing code, fails' => sub {
+{
+    note('Adding non existing code, fails');
     like(
         exception {
-            (my $builder = Dancer2::RPCPlugin::DispatchFromConfig->new(
-                plugin   => $plugin,
-                label    => 'xmlrpc',
-                endpoint => '/xmlrpc',
-                config   => {
-                    '/xmlrpc' => {
-                        'MyAppCode' => {
-                            'system.nonexistent' => 'nonexistent',
+            (
+                my $builder = Dancer2::RPCPlugin::DispatchFromConfig->new(
+                    plugin_object => $plugin,
+                    plugin        => 'xmlrpc',
+                    endpoint      => '/xmlrpc',
+                    config        => {
+                        '/xmlrpc' => {
+                            'MyAppCode' => {
+                                'system.nonexistent' => 'nonexistent',
+                            }
                         }
-                    }
-                },
-            ))->build_dispatch_table();
+                    },
+                )
+            )->build_dispatch_table();
         },
         qr/Handler not found for system.nonexistent: MyAppCode::nonexistent doesn't seem to exist/,
         "Setting a non-existent dispatch target throws an exception"
     );
-};
+}
 
-subtest 'Adding non existing package, fails' => sub {
+{
+    note('Adding non existing package, fails');
     like(
         exception {
-            (my $builder = Dancer2::RPCPlugin::DispatchFromConfig->new(
-                plugin   => $plugin,
-                label    => 'xmlrpc',
-                endpoint => '/xmlrpc',
-                config   => {
-                    '/xmlrpc' => {
-                        'MyNotExistingApp' => {
-                            'system.nonexistent' => 'nonexistent',
+            (
+                my $builder = Dancer2::RPCPlugin::DispatchFromConfig->new(
+                    plugin_object => $plugin,
+                    plugin        => 'xmlrpc',
+                    endpoint      => '/xmlrpc',
+                    config        => {
+                        '/xmlrpc' => {
+                            'MyNotExistingApp' => {
+                                'system.nonexistent' => 'nonexistent',
+                            }
                         }
-                    }
-                },
-            ))->build_dispatch_table();
+                    },
+                )
+            )->build_dispatch_table();
         },
         qr/Cannot load MyNotExistingApp .+ in build_dispatch_table_from_config/s,
         "Using a non existing package throws an exception"
     );
-};
+}
 
 Test::NoWarnings::had_no_warnings();
 $Test::NoWarnings::do_end_test = 0;

@@ -5,7 +5,8 @@ use lib 't/inc';
 use Test::More;
 use Test::NoWarnings ();
 
-subtest 'Consume role' => sub {
+{
+    note('Consume role');
     my $tst = MyConsumer::REST->new();
     isa_ok($tst, 'MyConsumer::REST');
     ok(
@@ -14,16 +15,17 @@ subtest 'Consume role' => sub {
     );
     is(MyConsumer::REST->rpcplugin_tag, 'restrpc', "CLASS->rpcplugin_tag()");
     is($tst->rpcplugin_tag, 'restrpc', "INSTANCE->rpcplugin_tag()");
-};
+}
 
-subtest 'Create builder from config' => sub {
+{
+    note('Create builder from config');
     my $tst = MyConsumer::REST->new();
     isa_ok($tst, 'MyConsumer::REST');
     my $builder = $tst->dispatch_builder(
-       '/endpoint',
-       undef,
-       undef,
-    {'/endpoint' => {'MyTestConfig' => {method1 => 'sub1'}}}
+        '/endpoint',
+        undef,
+        undef,
+        {'/endpoint' => {'MyTestConfig' => {method1 => 'sub1'}}}
     );
     isa_ok($builder, 'CODE');
     my $dispatch = $builder->();
@@ -37,9 +39,10 @@ subtest 'Create builder from config' => sub {
         },
         "Dispatch from Config"
     );
-};
+}
 
-subtest 'Create builder from POD' => sub {
+{
+    note('Create builder from POD');
     my $tst = MyConsumer::REST->new();
     isa_ok($tst, 'MyConsumer::REST');
     my $builder = $tst->dispatch_builder(
@@ -59,13 +62,13 @@ subtest 'Create builder from POD' => sub {
         },
         "Dispatch from Pod"
     ) or diag(explain($dispatch));
-};
+}
 
-subtest 'Dispatch from code' => sub {
+{
+    note('Dispatch from code');
     my $tst = MyConsumer::REST->new();
     isa_ok($tst, 'MyConsumer::REST');
     my $builder = $tst->dispatch_builder(
-        
         '/endpoint',
         sub {
             return {
@@ -88,7 +91,7 @@ subtest 'Dispatch from code' => sub {
         },
         "Dispatch from Code"
     ) or diag(explain($dispatch));
-};
+}
 
 
 Test::NoWarnings::had_no_warnings();

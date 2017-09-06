@@ -1,6 +1,7 @@
 ex/app.psgi
 ex/config.yml
 ex/environments/test.yml
+ex/MixedEndpoints.pm
 ex/MyApp.pm
 ex/MyAppCode.pm
 ex/MyBogusApp.pm
@@ -37,9 +38,9 @@ t/010-dispatch-from-config.t
 t/015-dispatch-from-pod.t
 t/020-callbackresult.t
 t/030-dispatchmethodlist.t
-t/040-rpcplugin-role.t
 t/040-flatten-data.t
 t/050-error-response.t
+t/060-rpcplugin-role.t
 t/100-xmlrpc.t
 t/110-xmlrpc-callbackfail.t
 t/115-xmlrpc-callback-die.t

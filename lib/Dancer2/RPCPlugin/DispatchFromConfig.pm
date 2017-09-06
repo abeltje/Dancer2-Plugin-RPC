@@ -4,12 +4,12 @@ use Moo;
 use Dancer2::RPCPlugin::DispatchItem;
 use Scalar::Util 'blessed';
 
-has plugin => (
+has plugin_object => (
     is       => 'ro',
     isa      => sub { blessed($_[0]) },
     required => 1,
 );
-has label => (
+has plugin => (
     is       => 'ro',
     isa      => sub { $_[0] =~ qr/^(?:jsonrpc|restrpc|xmlrpc)$/ },
     required => 1,
@@ -27,7 +27,7 @@ has endpoint => (
 
 sub build_dispatch_table {
     my $self = shift;
-    my $app = $self->plugin->app;
+    my $app = $self->plugin_object->app;
     my $config = $self->config->{ $self->endpoint };
 
     my @packages = keys %$config;
@@ -61,10 +61,10 @@ sub build_dispatch_table {
     my $dispatch_dump = do {
         require Data::Dumper;
         local ($Data::Dumper::Indent, $Data::Dumper::Sortkeys, $Data::Dumper::Terse) = (0, 1, 1);
-        Data::Dumper::Dumper(\%dispatch);
+        Data::Dumper::Dumper($dispatch);
     };
     $app->log(
-        debug => "[dispatch_table_from_config]->{$self->label} ", $dispatch_dump
+        debug => "[dispatch_table_from_config]->{$self->plugin} ", $dispatch_dump
     );
 
     return $dispatch;
@@ -99,9 +99,9 @@ Named, list:
 
 =over
 
-=item plugin => $plugin
+=item plugin_object => $plugin
 
-=item label => <xmlrpc|jsonrpc|jsonrpc>
+=item plugin => <xmlrpc|jsonrpc|jsonrpc>
 
 =item config => $config_from_plugin
 

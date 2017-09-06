@@ -6,12 +6,12 @@ use Params::Validate ':all';
 use Pod::Simple::PullParser;
 use Scalar::Util 'blessed';
 
-has plugin => (
+has plugin_object => (
     is       => 'ro',
     isa      => sub { blessed($_[0]) },
     required => 1,
 );
-has label => (
+has plugin => (
     is       => 'ro',
     isa      => sub { $_[0] =~ qr/^(?:jsonrpc|restrpc|xmlrpc)$/ },
     required => 1,
@@ -21,14 +21,19 @@ has packages => (
     isa      => sub { ref($_[0]) eq 'ARRAY' },
     required => 1,
 );
+has endpoint => (
+    is       => 'ro',
+    isa      => sub { $_[0] && !ref($_[0]) },
+    required => 1,
+);
 
 sub build_dispatch_table {
     my $self = shift;
-    my $app = $self->plugin->app;
+    my $app = $self->plugin_object->app;
 
     my $pp = Pod::Simple::PullParser->new();
-    $pp->accept_targets($self->label);
-    $app->log(debug => "[dispatch_table_from_pod] for @{[$self->label]}");
+    $pp->accept_targets($self->plugin);
+    $app->log(debug => "[dispatch_table_from_pod] for @{[$self->plugin]}");
 
     my %dispatch;
     for my $package (@{ $self->packages }) {
@@ -49,7 +54,7 @@ sub build_dispatch_table {
         local ($Data::Dumper::Indent, $Data::Dumper::Sortkeys, $Data::Dumper::Terse) = (0, 1, 1);
         Data::Dumper::Dumper(\%dispatch);
     };
-    $app->log(debug => "[dispatch_table_from_pod]->{$self->label} ", $dispatch_dump);
+    $app->log(debug => "[dispatch_table_from_pod]->{$self->plugin} ", $dispatch_dump);
 
     return \%dispatch;
 }
@@ -63,7 +68,7 @@ sub _parse_file {
             parser  => { type  => OBJECT },
         }
     );
-    my $app = $self->plugin->app;
+    my $app = $self->plugin_object->app;
 
     (my $pkg_as_file = "$args->{package}.pm") =~ s{::}{/}g;
     my $pkg_file = $INC{$pkg_as_file};
@@ -84,6 +89,7 @@ sub _parse_file {
 
         $app->log(debug => "=for-token $label => ", $ntoken->text);
         my ($if_name, $code_name, $ep_name) = split " ", $ntoken->text;
+        $ep_name //= $self->endpoint;
         if (!$code_name) {
             $app->log(
                 error => sprintf(
@@ -96,7 +102,8 @@ sub _parse_file {
             );
             next;
         }
-        $app->log(debug => "[build_dispatcher] $args->{package}\::$code_name => $if_name");
+        $app->log(debug => "[build_dispatcher] $args->{package}\::$code_name => $if_name ($ep_name)");
+        next if $ep_name ne $self->endpoint;
 
         my $pkg = $args->{package};
         if (my $handler = $pkg->can($code_name)) {
@@ -147,11 +154,13 @@ This parses the text of the given packages, looking for Dispatch Table hints:
 
 =over
 
-=item plugin => An instance of the current plugin
+=item plugin_object => An instance of the current plugin
 
-=item label => <jsonrpc|restrpc|xmlrpc>
+=item plugin => <jsonrpc|restrpc|xmlrpc>
 
 =item packages => a list (ArrayRef) of package names to be parsed
+
+=item endpoint => $endpoint
 
 =back
 
