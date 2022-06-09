@@ -22,7 +22,10 @@ lib/Dancer2/Plugin/RPC/JSONRPC.pm
 lib/Dancer2/Plugin/RPC/RESTRPC.pm
 lib/Dancer2/Plugin/RPC/XMLRPC.pm
 lib/Dancer2/RPCPlugin.pm
-lib/Dancer2/RPCPlugin/CallbackResult/Factory.pm
+lib/Dancer2/RPCPlugin/CallbackResult.pm
+lib/Dancer2/RPCPlugin/CallbackResultFactory.pm
+lib/Dancer2/RPCPlugin/CallbackResult/Fail.pm
+lib/Dancer2/RPCPlugin/CallbackResult/Success.pm
 lib/Dancer2/RPCPlugin/DispatchFromConfig.pm
 lib/Dancer2/RPCPlugin/DispatchFromPod.pm
 lib/Dancer2/RPCPlugin/DispatchItem.pm

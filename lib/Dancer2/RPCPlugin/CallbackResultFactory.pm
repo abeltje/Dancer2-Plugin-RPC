@@ -1,12 +1,16 @@
-package Dancer2::RPCPlugin::CallbackResult::Factory;
+package Dancer2::RPCPlugin::CallbackResultFactory;
 use warnings;
 use strict;
+
+our $VERSION = '2.00';
 
 use Exporter 'import';
 our @EXPORT = qw/ callback_success callback_fail /;
 
 use Params::ValidationCompiler 'validation_for';
 use Types::Standard qw/ Int Str /;
+use Dancer2::RPCPlugin::CallbackResult::Success;
+use Dancer2::RPCPlugin::CallbackResult::Fail;
 
 =head1 NAME
 
@@ -15,7 +19,7 @@ Dancer2::RPCPlugin::CallbackResult - Factory for generating Callback-results.
 =head1 SYNOPSIS
 
     use Dancer2::Plugin::RPC::JSON;
-    use Dancer2::RPCPlugin::CallbackResult;
+    use Dancer2::RPCPlugin::CallbackResultFactory;
     jsonrpc '/admin' => {
         publish => 'config',
         callback => sub {
@@ -31,6 +35,8 @@ Dancer2::RPCPlugin::CallbackResult - Factory for generating Callback-results.
     };
 
 =head1 DESCRIPTION
+
+This module exports 2 factory subs: C<callback_success> and C<callback_fail>.
 
 =head2 callback_success()
 
@@ -73,103 +79,8 @@ sub callback_fail {
 
 1;
 
-package Dancer2::RPCPlugin::CallbackResult;
-use Moo;
-
-=head1 NAME
-
-Dancer2::RPCPlugin::CallbackResult - Base class for callback-result.
-
-=cut
-
-use overload (
-    '""' => sub { $_[0]->_as_string },
-    fallback => 1,
-);
-
-1;
-
-package Dancer2::RPCPlugin::CallbackResult::Success;
-use Moo;
-
-extends 'Dancer2::RPCPlugin::CallbackResult';
-
-has success => (
-    is      => 'ro',
-    isa     => sub { $_[0] == 1 },
-    default => 1,
-);
-
-=head1 NAME
-
-Dancer2::RPCPlugin::CallbackResult::Success - Class for success
-
-=head1 DESCRIPTION
-
-=head2 new()
-
-Constructor, does not allow any arguments.
-
-=head2 success()
-
-Returns 1;
-
-=cut
-
-sub _as_string {
-    my $self = shift;
-    return "success";
-}
-
-1;
-
-package Dancer2::RPCPlugin::CallbackResult::Fail;
-use Moo;
-
-extends 'Dancer2::RPCPlugin::CallbackResult';
-
-=head1 NAME
-
-Dancer2::RPCPlugin::CallbackResult::Fail - Class for failure
-
-=head2 new()
-
-Constructor, allows named arguments:
-
-=over
-
-=item error_code => $code
-
-=item error_message => $message
-
-=back
-
-=cut
-
-has error_code => (
-    is       => 'ro',
-    isa      => sub { $_[0] =~ /^[+-]?\d+$/ },
-    required => 1,
-);
-has error_message => (
-    is       => 'ro',
-    required => 1,
-);
-has success => (
-    is      => 'ro',
-    isa     => sub { $_[0] == 0 },
-    default => 0,
-);
-
-sub _as_string {
-    my $self = shift;
-    return sprintf("fail (%s => %s)", $self->error_code, $self->error_message);
-}
-
-1;
-
 =head1 COPYRIGHT
 
-(c) MMXVI - Abe Timmerman <abeltje@cpan.org>
+E<copy> MMXXII - Abe Timmerman <abeltje@cpan.org>
 
 =cut
