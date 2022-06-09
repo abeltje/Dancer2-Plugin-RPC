@@ -39,7 +39,7 @@ t/020-callbackresult.t
 t/030-dispatchmethodlist.t
 t/040-flatten-data.t
 t/050-error-response.t
-t/060-rpcplugin-role.t
+t/090-rpcplugin-role.t
 t/100-xmlrpc.t
 t/110-xmlrpc-callbackfail.t
 t/115-xmlrpc-callback-die.t
