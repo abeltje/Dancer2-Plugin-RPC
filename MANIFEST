@@ -36,6 +36,9 @@ Makefile.PL
 Changes
 MANIFEST			This list of files
 MANIFEST.SKIP
+META.json
+META.yml
+README.md
 t/010-dispatch-from-config.t
 t/015-dispatch-from-pod.t
 t/020-callbackresult.t
@@ -62,8 +65,10 @@ t/315-restrpc-callback-die.t
 t/320-restrpc-codewrapper-die.t
 t/325-restrpc-myapp.t
 t/340-restrpc-quirks.t
+t/Test/abeltje.pm
 t/inc/MyTestPod.pm
 xt/00-manifest.t
 xt/01-compile.t
 xt/02-pod_syntax.t
 xt/03-pod-coverage.t
+xt/04-kwalitee.t

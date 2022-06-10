@@ -25,18 +25,19 @@ WriteMakefile(
 
     BUILD_REQUIRES => {
         'Test::Fatal'      => '0.01',
-        'Test::MockObject' => '1,20',
+        'Test::MockObject' => '1.20',
         'Test::More'       => '0.88',    # done_testing()
-        'Test::NoWarnings' => '1.04',
+        'Test::Warnings'   => '0.030',
     },
 
     MIN_PERL_VERSION => '5.010001',
 
-    META_ADD => {
+    META_MERGE => {
         'meta-spec' => {
             version    => 2,
         },
         'resources' => {
+            license    => [ 'perl_5'],
             homepage   => "https://github.com/abeltje/Dancer2-Plugin-RPC",
             repository => {
                 type   => "git",
