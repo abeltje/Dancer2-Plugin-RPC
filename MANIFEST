@@ -23,9 +23,10 @@ lib/Dancer2/Plugin/RPC/RESTRPC.pm
 lib/Dancer2/Plugin/RPC/XMLRPC.pm
 lib/Dancer2/RPCPlugin.pm
 lib/Dancer2/RPCPlugin/CallbackResult.pm
-lib/Dancer2/RPCPlugin/CallbackResultFactory.pm
 lib/Dancer2/RPCPlugin/CallbackResult/Fail.pm
 lib/Dancer2/RPCPlugin/CallbackResult/Success.pm
+lib/Dancer2/RPCPlugin/CallbackResultFactory.pm
+lib/Dancer2/RPCPlugin/DefaultRoute.pm
 lib/Dancer2/RPCPlugin/DispatchFromConfig.pm
 lib/Dancer2/RPCPlugin/DispatchFromPod.pm
 lib/Dancer2/RPCPlugin/DispatchItem.pm
@@ -48,6 +49,10 @@ t/030-dispatchmethodlist.t
 t/040-flatten-data.t
 t/050-error-response.t
 t/060-plugin-names.t
+t/070-default-route-no-rpc.t
+t/071-default-route-xmlrpc.t
+t/072-default-route-jsonrpc.t
+t/073-default-route-restrpc.t
 t/090-rpcplugin-role.t
 t/100-xmlrpc.t
 t/110-xmlrpc-callbackfail.t
@@ -70,6 +75,9 @@ t/325-restrpc-myapp.t
 t/340-restrpc-quirks.t
 t/Test/abeltje.pm
 t/inc/MyTestPod.pm
+t/lib/MyTest/API.pm
+t/lib/MyTest/Client.pm
+t/lib/MyTest/Exception.pm
 xt/00-manifest.t
 xt/01-compile.t
 xt/02-pod_syntax.t
