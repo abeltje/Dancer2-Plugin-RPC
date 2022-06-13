@@ -33,6 +33,7 @@ lib/Dancer2/RPCPlugin/DispatchMethodList.pm
 lib/Dancer2/RPCPlugin/ErrorResponse.pm
 lib/Dancer2/RPCPlugin/FlattenData.pm
 lib/Dancer2/RPCPlugin/PluginNames.pm
+lib/Dancer2/RPCPlugin/ValidationTemplates.pm
 Makefile.PL
 Changes
 MANIFEST			This list of files
