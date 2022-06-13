@@ -32,6 +32,7 @@ lib/Dancer2/RPCPlugin/DispatchItem.pm
 lib/Dancer2/RPCPlugin/DispatchMethodList.pm
 lib/Dancer2/RPCPlugin/ErrorResponse.pm
 lib/Dancer2/RPCPlugin/FlattenData.pm
+lib/Dancer2/RPCPlugin/PluginNames.pm
 Makefile.PL
 Changes
 MANIFEST			This list of files
@@ -45,6 +46,7 @@ t/020-callbackresult.t
 t/030-dispatchmethodlist.t
 t/040-flatten-data.t
 t/050-error-response.t
+t/060-plugin-names.t
 t/090-rpcplugin-role.t
 t/100-xmlrpc.t
 t/110-xmlrpc-callbackfail.t
