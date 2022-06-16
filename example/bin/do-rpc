@@ -1,6 +1,9 @@
-#! /usr/bin/perl -w
-use v5.10;
+#! /usr/bin/env perl -w
+use v5.10.1;
 use strict;
+
+use FindBin;
+use lib "$FindBin::Bin/../local/lib/perl5";
 
 no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
@@ -47,11 +50,16 @@ BEGIN {
             isa => sub { !defined($_[0]) || $_[0] =~ /^0|1$/; },
             default => 1,
         );
+        has asjson => (
+            is      => 'ro',
+            isa => sub { !defined($_[0]) || $_[0] =~ /^0|1$/; },
+            default => 0,
+        );
 
         no if $] >= 5.018, warnings => 'experimental::smartmatch';
         use Getopt::Long qw/GetOptionsFromArray :config no_ignore_case no_auto_help/;
         use Data::Dumper;
-        $Data::Dumper::Indent = 0; $Data::Dumper::Sortkeys = 1; $Data::Dumper::Terse = 1;
+        ($Data::Dumper::Indent, $Data::Dumper::Sortkeys, $Data::Dumper::Terse) = (0, 1, 1);
         use Log::Log4perl ':easy';
 
         around BUILDARGS => sub {
@@ -72,11 +80,18 @@ BEGIN {
                     certcheck!
                     timeout=i
                     debug:1
+                    asjson:1
                 )
             );
 
             my $level = $option{debug} ? $TRACE : $INFO;
-            Log::Log4perl->easy_init({level => $level, layout => "[%p %l] %m%n"});
+            Log::Log4perl->easy_init(
+                {
+                    level  => $level,
+                    layout => "[%p %l] %m%n",
+                    file   => "STDOUT"
+                }
+            );
             my $logger = Log::Log4perl::get_logger;
 
             my %arguments = $option{json}
@@ -109,8 +124,24 @@ BEGIN {
             };
 
             my $answer = $client->call($self->call, @method, $self->arguments);
-            {
+            if ($self->asjson) {
+                my $jsonise_options = {
+                    utf8         => 1,
+                    allow_nonref => 1,
+                    pretty       => 1,
+                    canonical    => 1
+                };
+                $self->log_info(
+                    sprintf(
+                        "%s>%s: \n%s", $self->type, $self->call,
+                        to_json($answer, $jsonise_options)
+                    )
+                );
+            }
+            else {
                 local $Data::Dumper::Indent = 1;
+                local $Data::Dumper::Sortkeys = 1;
+                local $Data::Dumper::Terse = 1;
                 $self->log_info(
                     sprintf("%s>%s: \n%s", $self->type, $self->call, Dumper($answer))
                 );
@@ -151,7 +182,7 @@ BEGIN {
         sub _build_client {
             my $self = shift;
             return HTTP::Tiny->new(
-                agent      => "XS4ALL-do-rpc/$VERSION",
+                agent      => "Dancer2-RPCPlugin-do-rpc/$VERSION",
                 verify_SSL => 0,
                 timeout    => $self->timeout,
             );

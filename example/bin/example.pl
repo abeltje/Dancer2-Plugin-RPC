@@ -1,11 +1,11 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl -w
 use strict;
 
 use Cwd qw(abs_path);
 use Daemon::Control;
 
-my $PORT = 3000;
-my $APP = 'example';
+my $PORT = $ENV{APP_PORT} // 3000;
+my $APP  = $ENV{APP_NAME} // 'example';
 my $APP_DIR = abs_path('..') . "/$APP";
 
 # Fake the `carton exec -- ...` effect
@@ -21,7 +21,7 @@ Daemon::Control->new(
         program_args => [
             '-l', "0.0.0.0:$PORT",
             '--workers', '2',
-            'bin/app.psgi'
+            'bin/app.psgi',
         ],
 
         pid_file    => "$APP_DIR/$APP.pid",

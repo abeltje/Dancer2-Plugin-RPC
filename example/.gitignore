@@ -1,0 +1,6 @@
+local/
+cpanfile.snapshot
+example_log.log
+example.out
+example.err
+example.pid

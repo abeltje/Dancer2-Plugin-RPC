@@ -1,71 +1,130 @@
 package Example;
-use warnings;
 use strict;
-use lib 'lib/';
+use warnings;
+use lib 'lib/', 'local/lib/perl5';
 
-use Dancer2 ':syntax';
-use Dancer2::Plugin::RPC::XML;
-use Dancer2::Plugin::RPC::JSON;
-use Dancer2::Plugin::RPC::REST;
+our $VERSION = '0.02';
 
-use MetaCpanClient;
-use System;
-use MetaCpan;
+use Dancer2;
+use Example::Client::MetaCpan;
+use Example::API::System;
+use Example::API::MetaCpan;
+use Example::EndpointConfig;
 
-# Map plugin-name to protocol-tag
-my %plugin_map = (
-    'RPC::XML'  => 'xmlrpc',
-    'RPC::JSON' => 'jsonrpc',
-    'RPC::REST' => 'restrpc',
-);
-# Map protocol-tag to registrar function
-my %proto_map = (
-    xmlrpc  => \&xmlrpc,
-    jsonrpc => \&jsonrpc,
-    restrpc => \&restrpc,
-);
+use Dancer2::Plugin::RPC::JSONRPC;
+use Dancer2::Plugin::RPC::XMLRPC;
+use Dancer2::Plugin::RPC::RESTRPC;
 
-# prepare MetaCpanClient
-my $mc_client = MetaCpanClient->new(
-    endpoint => config->{metacpan}{endpoint},
-);
-# Prepare the code-wrapper for the classes
-my $code_wrapper = sub {
-    my ($code, $package, $method, @arguments) = @_;
-    my $instance = instance_for_module($package);
-    return $instance->$code(@arguments);
-};
+use Dancer2::RPCPlugin::DefaultRoute;
 
-# Register all endpoints for all configured plugins
-my $plugins = config->{plugins};
-for my $plugin (keys %$plugins) {
-    next if !exists($plugin_map{$plugin});
+# Trail & Error...
+$Log::Log4perl::caller_depth = 6;
 
-    my $registrar = $proto_map{ $plugin_map{$plugin} };
-    for my $path (keys %{ $plugins->{$plugin} }) {
-        debug("register $plugin => $path");
-
-        $registrar->(
-            $path => {
-                publish      => 'config',
-                code_wrapper => $code_wrapper,
-            }
+use Bread::Board;
+my $system_api = container 'System' => as {
+    container 'apis' => as {
+        service 'Example::API::System' => (
+            class => 'Example::API::System',
+            dependencies => {
+                app_version  => literal $VERSION,
+                app_name     => literal __PACKAGE__,
+                active_since => literal time(),
+            },
         );
+    };
+};
+my $example_api = container 'Example' => as {
+    container 'clients' => as {
+        service 'MetaCpan' => (
+            class        => 'Example::Client::MetaCpan',
+            lifecycle    => 'Singleton',
+            dependencies => {
+                map {
+                    ( $_ => literal config->{metacpan}{$_} )
+                } keys %{ config->{metacpan} },
+            },
+        );
+    };
+    container 'apis' => as {
+        service 'Example::API::MetaCpan' => (
+            class        => 'Example::API::MetaCpan',
+            dependencies => {
+                mc_client => '../clients/MetaCpan',
+            },
+        );
+    };
+};
+no Bread::Board;
+
+{
+    my $system_config = Example::EndpointConfig->new(
+        publish          => 'pod',
+        bread_board      => $system_api,
+        plugin_arguments => {
+            arguments => ['Example::API::System'],
+        },
+    );
+    for my $plugin (qw{ RPC::JSONRPC RPC::RESTRPC RPC::XMLRPC}) {
+        $system_config->register_endpoint($plugin, '/system');
+    }
+}
+{
+    my $example_config = Example::EndpointConfig->new(
+        publish     => 'config',
+        bread_board => $example_api,
+    );
+    my $plugins = config->{plugins};
+    for my $plugin (keys %$plugins) {
+        for my $path (keys %{$plugins->{$plugin}}) {
+            $example_config->register_endpoint($plugin, $path);
+        }
     }
 }
 
-# Every class has its own instantiation
-sub instance_for_module {
-    my ($module) = @_;
-
-    my $instance;
-    if ($module eq 'MetaCpan') {
-        $instance = MetaCpan->new(mc_client => $mc_client);
-    }
-    else {
-        $instance = System->new();
-    }
-    return $instance;
-}
-
+setup_default_route();
 1;
+
+=head1 NAME
+
+Example - An example RPC-application for L<Dancer2::Plugin::RPC>
+
+=head1 SYNOPSIS
+
+    $ cd example
+    $ carton install
+    $ APP_PORT=3030 carton exec -- bin/example.pl start
+    $ carton exec -- bin/do-rpc -u http://localhost:3030/system -c status -t xmlrpc
+    $ carton exec -- bin/example.pl stop
+
+=head1 DESCRIPTION
+
+This example application shows a way to use the L<Dancer2::Plugin::RPC> system.
+
+=head2 Use of L<Bread::Board> for dynamcally building parts of applications
+
+=head2 Split Controler from Model
+
+=head2 Different ways of publishing APIs with the RPC-plugins
+
+=over
+
+=item POD
+
+As the L<Example::API::System> module shows, one can use the special
+POD-directives C<< =for <plugin-keyword> <rpc-name> <sub-name> [<path>] >> to
+publish access to the API.
+
+The code and the POD must be in the C<.pm>-file.
+
+=item CONFIG
+
+As the L<Example::API::MetaCpan> module shows, one can also use the
+C<config.yml> file to set up the access to the API.
+
+=back
+
+=head1 COPYRIGHT
+
+E<copy> MMXXII - Abe Timmerman <abeltje@cpan.org>
+
+=cut

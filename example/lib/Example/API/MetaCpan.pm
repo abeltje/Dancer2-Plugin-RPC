@@ -1,17 +1,27 @@
-package MetaCpan;
+package Example::API::MetaCpan;
 use Moo;
-use Scalar::Util 'blessed';
+use Types::Standard qw( InstanceOf );
+
+with qw(
+    Example::ValidationTemplates
+    MooX::Params::CompiledValidators
+);
+
+our $VERSION = '2.00';
 
 has mc_client => (
     is       => 'ro',
-    isa      => sub { blessed($_[0]) eq 'MetaCpanClient' },
+    isa      => InstanceOf['Example::Client::MetaCpan'],
     required => 1
 );
 
 sub mc_search {
     my $self = shift;
-    my $args = shift;
-    my $response = $self->mc_client->call($args->{query});
+    $self->validate_parameters(
+        { $self->parameter(query => $self->Required, {store => \my $query}) },
+        $_[0]
+    );
+    my $response = $self->mc_client->call($query);
     if (exists $response->{hits}) {
         my @hits = map {
             {
@@ -32,6 +42,7 @@ sub mc_search {
     return {hits => [ ]};
 }
 
+use namespace::autoclean;
 1;
 
 =head1 NAME
@@ -43,7 +54,7 @@ MetaCpan - Interface to  MetaCpan (https://fastapi.metacpan.org/v1/release/_sear
     use MetaCpanClient;
     use MetaCpan;
     my $mc_client = MetaCpanClient->new(
-        endpoint => 'https://fastapi.metacpan.org/v1/release/_search',
+        base_uri => 'https://fastapi.metacpan.org/v1/release/_search',
     );
     my $mc = MetaCpan->new(mc_client => $mc_client);
 
