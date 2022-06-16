@@ -1,23 +1,21 @@
 package Dancer2::Plugin::RPC::RESTRPC;
+use Moo;
 use Dancer2::Plugin;
-use namespace::autoclean;
-
-use v5.10.1;
-no if $] >= 5.018, warnings => 'experimental::smartmatch';
 
 with 'Dancer2::RPCPlugin';
-our $VERSION = Dancer2::RPCPlugin->VERSION;
 
-use Dancer2::RPCPlugin::CallbackResult::Factory;
-use Dancer2::RPCPlugin::DispatchItem;
-use Dancer2::RPCPlugin::DispatchMethodList;
+our $VERSION = '2.00';
+use constant PLUGIN_NAME => 'restrpc';
+
+use Dancer2::RPCPlugin::CallbackResultFactory;
 use Dancer2::RPCPlugin::ErrorResponse;
 use Dancer2::RPCPlugin::FlattenData;
 
 use JSON;
 use Scalar::Util 'blessed';
+use Time::HiRes 'time';
 
-plugin_keywords 'restrpc';
+plugin_keywords PLUGIN_NAME;
 
 sub restrpc {
     my ($plugin, $base_url, $config) = @_;
@@ -29,68 +27,93 @@ sub restrpc {
         plugin_setting(),
     )->();
 
-    my $lister = Dancer2::RPCPlugin::DispatchMethodList->new();
-    $lister->set_partial(
+    my $lister = $plugin->partial_method_lister(
         protocol => __PACKAGE__->rpcplugin_tag,
         endpoint => $base_url,
         methods  => [ sort keys %{ $dispatcher } ],
     );
 
-    my $code_wrapper = $config->{code_wrapper}
-        ? $config->{code_wrapper}
-        : sub {
-            my $code = shift;
-            my $pkg  = shift;
-            $code->(@_);
-        };
+    my $code_wrapper = $plugin->code_wrapper($config);
     my $callback = $config->{callback};
 
     $plugin->app->log(debug => "Starting handler build: ", $lister);
     my $restrpc_handler = sub {
         my $dsl = shift;
-        if ($dsl->app->request->content_type ne 'application/json') {
+
+        my $http_request = $dsl->app->request;
+        my ($ct) = (split /;\s*/, $http_request->content_type, 2);
+        if ($ct ne 'application/json') {
             $dsl->pass();
         }
-        $dsl->app->log(debug => "[handle_restrpc_request] Processing: ", $dsl->app->request->body);
-
-        my $request = $dsl->app->request;
-        my $method_args = $request->body
-            ? from_json($request->body)
-            : undef;
-        my ($method_name) = $request->path =~ m{$base_url/(\w+)};
-        $dsl->app->log(debug => "[handle_restrpc_call($method_name)] ", $method_args);
+        $dsl->app->log(
+            debug => "[handle_restrpc_request] Processing: ", $http_request->body
+        );
+        my ($method_name) = $http_request->path =~ m{$base_url/(\w+)};
 
         $dsl->response->content_type('application/json');
         my $response;
+        my $method_args = $http_request->body
+            ? from_json($http_request->body)
+            : undef;
+        $dsl->app->log(debug => "[handle_restrpc_call($method_name)] ", $method_args);
+        my $start_request = time();
         my Dancer2::RPCPlugin::CallbackResult $continue = eval {
+            local $Dancer2::RPCPlugin::ROUTE_INFO = {
+                plugin        => PLUGIN_NAME,
+                endpoint      => $base_url,
+                rpc_method    => $method_name,
+                full_path     => $http_request->path,
+                http_method   => uc($http_request->method),
+            };
             $callback
-                ? $callback->($request, $method_name, $method_args)
+                ? $callback->($http_request, $method_name, $method_args)
                 : callback_success();
         };
 
         if (my $error = $@) {
-            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+            my $error_response = error_response(
                 error_code    => 500,
                 error_message => $error,
-            )->as_restrpc_error;
+            );
+            $dsl->response->status($error_response->return_status(PLUGIN_NAME));
+            $response = $error_response->as_restrpc_error;
+            return restrpc_response($dsl, $response);
         }
-        elsif (! $continue->success) {
-            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+        if (!blessed($continue) || !$continue->does('Dancer2::RPCPlugin::CallbackResult')) {
+            my $error_response = error_response(
+                error_code    => 500,
+                error_message => "Internal error: 'callback_result' wrong class "
+                               . blessed($continue),
+            );
+            $dsl->response->status($error_response->return_status(PLUGIN_NAME));
+            $response = $error_response->as_restrpc_error;
+        }
+        elsif (blessed($continue) && !$continue->success) {
+            my $error_response = error_response(
                 error_code    => $continue->error_code,
                 error_message => $continue->error_message,
-            )->as_restrpc_error;
+            );
+            $dsl->response->status($error_response->return_status(PLUGIN_NAME));
+            $response = $error_response->as_restrpc_error;
         }
         else {
-            my Dancer2::RPCPlugin::DispatchItem $di = $dispatcher->{$method_name};
+            my $di = $dispatcher->{$method_name};
             my $handler = $di->code;
             my $package = $di->package;
 
             $response = eval {
                 $code_wrapper->($handler, $package, $method_name, $method_args);
             };
+            my $error = $@;
 
-            $dsl->app->log(debug => "[handling_restrpc_response($method_name)] ", $response);
-            if (my $error = $@) {
+            $dsl->app->log(debug => "[handled_restrpc_response($method_name)] ", $response);
+            $dsl->app->log(
+                info => sprintf(
+                    "[RPC::RESTRPC] request for '%s' took %.4fs",
+                    $method_name, time() - $start_request
+                )
+            );
+            if ($error) {
                 $response = Dancer2::RPCPlugin::ErrorResponse->new(
                     error_code => 500,
                     error_message => $error,
@@ -104,8 +127,7 @@ sub restrpc {
             }
         }
 
-        $response = { RESULT => $response } if !ref($response);
-        return to_json($response);
+        return restrpc_response($dsl, $response);
     };
 
     for my $call (keys %{ $dispatcher }) {
@@ -117,9 +139,23 @@ sub restrpc {
             code   => $restrpc_handler,
         );
     }
-    return $plugin;
 }
 
+sub restrpc_response {
+    my ($dsl, $data) = @_;
+
+    my $jsonise_options = {canonical => 1};
+    if ($dsl->config->{encoding} && $dsl->config->{encoding} =~ m{^utf-?8$}i) {
+        $jsonise_options->{utf8} = 1;
+    }
+
+    $data = { RESULT => $data } if !ref($data);
+    my $response = to_json($data, $jsonise_options);
+    $dsl->app->log(debug => "[restrpc_response] ", $response);
+    return $response;
+}
+
+use namespace::autoclean;
 1;
 
 __END__
@@ -281,13 +317,15 @@ actual sub-name in the current package.
 
 =head1 INTERNAL
 
-=head2 build_dispatcher_from_config
+=head2 restrpc_response
 
-Creates a (partial) dispatch table from data passed from the (YAML)-config file.
+Creates a cannonical-JSON response.
 
-=head2 build_dispatcher_from_pod
+=begin pod_coverage
 
-Creates a (partial) dispatch table from data provided in POD.
+=head2 PLUGIN_NAME
+
+=end pod_coverage
 
 =head1 COPYRIGHT
 

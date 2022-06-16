@@ -1,7 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
 use Plack::Test;
 
 use HTTP::Request;
@@ -119,7 +118,7 @@ subtest "XMLRPC methodList(plugin => 'xmlrpc')" => sub {
     ) or diag(explain($methods));
 };
 
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyXMLRPCApp;

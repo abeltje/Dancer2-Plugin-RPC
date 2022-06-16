@@ -1,8 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
-use Test::NoWarnings ();
 use Plack::Test;
 
 use Dancer2::RPCPlugin::ErrorResponse;
@@ -62,9 +60,7 @@ my $tester = Plack::Test->create($app);
     ) or diag(explain($response_result));
 };
 
-Test::NoWarnings::had_no_warnings();
-$Test::NoWarnings::do_end_test = 0;
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyXMLRPCApp;

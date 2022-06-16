@@ -1,7 +1,6 @@
-#! perl -w
-use strict;
-use Test::More;
-use Test::NoWarnings ();
+#! perl -I. -w
+use t::Test::abeltje;
+
 use Plack::Test;
 
 use HTTP::Request;
@@ -91,9 +90,7 @@ subtest "RESTRPC method_list(plugin => 'restrpc')" => sub {
     ) or diag(explain($response));
 };
 
-Test::NoWarnings::had_no_warnings();
-$Test::NoWarnings::do_end_test = 0;
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyAllRPCApp;

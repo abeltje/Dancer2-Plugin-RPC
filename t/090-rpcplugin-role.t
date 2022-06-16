@@ -1,9 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 use lib 't/inc';
-
-use Test::More;
-use Test::NoWarnings ();
 
 {
     note('Consume role');
@@ -94,9 +91,7 @@ use Test::NoWarnings ();
 }
 
 
-Test::NoWarnings::had_no_warnings();
-$Test::NoWarnings::do_end_test = 0;
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     use Test::MockObject;

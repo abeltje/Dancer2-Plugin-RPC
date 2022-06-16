@@ -45,3 +45,30 @@ sub ValidationTemplates {
 
 use namespace::autoclean;
 1;
+
+=head1 NAME
+
+Dancer2::RPCPlugin::ValidationTemplates - Parameters used in the project.
+
+=head1 SYNOPSIS
+
+    package MyThing;
+    use Moo;
+    with qw(
+        Dancer2::RPCPlugin::ValidationTemplates
+        MooX::Params::CompiledValidators
+    );
+    ...
+
+=head1 DESCRIPTION
+
+This L<Moo::Role> defines the parameters used in the L<Dancer2::Plugin::RPC>
+project for use with L<MooX::Params::CompiledValidators>
+
+=head2 ValidationTemplates
+
+=head1 COPYRIGHT
+
+E<copy> MMXXII - Abe Timmerman <abeltje@cpan.org>
+
+=cut

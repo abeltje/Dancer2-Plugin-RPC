@@ -1,23 +1,22 @@
 package Dancer2::Plugin::RPC::XMLRPC;
+use Moo;
 use Dancer2::Plugin;
 
-use v5.10.1;
-no if $] >= 5.018, warnings => 'experimental::smartmatch';
-
 with 'Dancer2::RPCPlugin';
-our $VERSION = Dancer2::RPCPlugin->VERSION;
 
-use Dancer2::RPCPlugin::CallbackResult::Factory;
-use Dancer2::RPCPlugin::DispatchItem;
-use Dancer2::RPCPlugin::DispatchMethodList;
+our $VERSION = '2.00';
+use constant PLUGIN_NAME => 'xmlrpc';
+
+use Dancer2::RPCPlugin::CallbackResultFactory;
 use Dancer2::RPCPlugin::ErrorResponse;
 use Dancer2::RPCPlugin::FlattenData;
 
 use RPC::XML;
 use RPC::XML::ParserFactory;
 use Scalar::Util 'blessed';
+use Time::HiRes 'time';
 
-plugin_keywords 'xmlrpc';
+plugin_keywords PLUGIN_NAME;
 
 sub xmlrpc {
     my ($plugin, $endpoint, $config) = @_;
@@ -29,35 +28,32 @@ sub xmlrpc {
         plugin_setting(),
     )->();
 
-    my $lister = Dancer2::RPCPlugin::DispatchMethodList->new();
-    $lister->set_partial(
-        protocol => 'xmlrpc',
+    my $lister = $plugin->partial_method_lister(
+        protocol => __PACKAGE__->rpcplugin_tag,
         endpoint => $endpoint,
         methods  => [ sort keys %{ $dispatcher } ],
     );
 
-    my $code_wrapper = $config->{code_wrapper}
-        ? $config->{code_wrapper}
-        : sub {
-            my $code = shift;
-            my $pkg  = shift;
-            $code->(@_);
-        };
+    my $code_wrapper = $plugin->code_wrapper($config);
     my $callback = $config->{callback};
 
-    $plugin->app->log(debug => "Starting handler build: ", $lister);
+    $plugin->app->log(debug => "Starting xmlrpc-handler build: ", $lister);
     my $xmlrpc_handler = sub {
         my $dsl = shift;
-        if ($dsl->app->request->content_type ne 'text/xml') {
+
+        my $http_request = $dsl->app->request;
+        my ($ct) = (split /;\s*/, $http_request->content_type, 2);
+        if ($ct !~ m{^ (application|text) / xml $}x) {
             $dsl->pass();
         }
-        $dsl->app->log(debug => "[handle_xmlrpc_request] Processing: ", $dsl->app->request->body);
+        $dsl->app->log(
+            debug => "[handle_xmlrpc_request] Processing: ", $http_request->body
+        );
 
         local $RPC::XML::ENCODING = $RPC::XML::ENCODING ='UTF-8';
         my $p = RPC::XML::ParserFactory->new();
-        my $request = $p->parse($dsl->app->request->body);
+        my $request = $p->parse($http_request->body);
         my $method_name = $request->name;
-        $dsl->app->log(debug => "[handle_xmlrpc_call($method_name)] ", $request->args);
 
         if (! exists $dispatcher->{$method_name}) {
             $dsl->app->log(warning => "$endpoint/#$method_name not found, pass()");
@@ -66,48 +62,78 @@ sub xmlrpc {
 
         $dsl->response->content_type('text/xml');
         my $response;
+        $dsl->app->log(debug => "[handle_xmlrpc_call($method_name)] ", $request->args);
         my @method_args = map $_->value, @{$request->args};
+        my $start_request = time();
         my Dancer2::RPCPlugin::CallbackResult $continue = eval {
+            local $Dancer2::RPCPlugin::ROUTE_INFO = {
+                plugin        => PLUGIN_NAME,
+                endpoint      => $endpoint,
+                rpc_method    => $method_name,
+                full_path     => $http_request->path,
+                http_method   => uc($http_request->method),
+            };
             $callback
                 ? $callback->($dsl->app->request, $method_name, @method_args)
                 : callback_success();
         };
 
         if (my $error = $@) {
-            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+            my $error_response = error_response(
                 error_code => 500,
                 error_message => $error,
-            )->as_xmlrpc_fault;
+            );
+            $dsl->response->status($error_response->return_status(PLUGIN_NAME));
+            $response = $error_response->as_xmlrpc_fault;
             return xmlrpc_response($dsl, $response);
         }
-        if (!blessed($continue) || !$continue->isa('Dancer2::RPCPlugin::CallbackResult')) {
-            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+        if (!blessed($continue) || !$continue->does('Dancer2::RPCPlugin::CallbackResult')) {
+            my $error_response = error_response(
                 error_code    => 500,
-                error_message => "Internal error: 'callback_result' wrong class " . blessed($continue),
-            )->as_xmlrpc_fault;
+                error_message => "Internal error: 'callback_result' wrong class "
+                               . blessed($continue),
+            );
+            $dsl->response->status($error_response->return_status(PLUGIN_NAME));
+            $response = $error_response->as_xmlrpc_fault;
         }
         elsif (blessed($continue) && !$continue->success) {
-            $response = Dancer2::RPCPlugin::ErrorResponse->new(
+            my $error_response = error_response(
                 error_code    => $continue->error_code,
                 error_message => $continue->error_message,
-            )->as_xmlrpc_fault;
+            );
+            $dsl->response->status($error_response->return_status(PLUGIN_NAME));
+            $response = $error_response->as_xmlrpc_fault;
         }
         else {
-            my Dancer2::RPCPlugin::DispatchItem $di = $dispatcher->{$method_name};
+            my $di = $dispatcher->{$method_name};
             my $handler = $di->code;
             my $package = $di->package;
 
             $response = eval {
                 $code_wrapper->($handler, $package, $method_name, @method_args);
             };
+            my $error = $@;
 
-            $dsl->app->log(debug => "[handling_xmlrpc_response($method_name)] ", $response);
-            if (my $error = $@) {
-                $response = Dancer2::RPCPlugin::ErrorResponse->new(
-                    error_code => 500,
-                    error_message => $error,
-                )->as_xmlrpc_fault;
+            $dsl->app->log(debug => "[handled_xmlrpc_request($method_name)] ", $response);
+            $dsl->app->log(
+                info => sprintf(
+                    "[RPC::XMLRPC] request for '%s' took %.4fs",
+                    $method_name, time() - $start_request
+                )
+            );
+
+            if ($error) {
+                my $error_response = blessed($error) && $error->can('as_xmlrpc_fault')
+                    ? $error
+                    : error_response(
+                            error_code    => -32500,
+                            error_message => $error,
+                            error_data    => $method_args[0],
+                    );
+                $dsl->app->response->status($error_response->return_status(PLUGIN_NAME));
+                $response = $error_response->as_xmlrpc_fault;
             }
+
             if (blessed($response) && $response->can('as_xmlrpc_fault')) {
                 $response = $response->as_xmlrpc_fault;
             }
@@ -124,7 +150,6 @@ sub xmlrpc {
         regexp => $endpoint,
         code   => $xmlrpc_handler,
     );
-    return $plugin;
 }
 
 sub xmlrpc_response {
@@ -143,6 +168,7 @@ sub xmlrpc_response {
     return $response->as_string;
 }
 
+use namespace::autoclean;
 1;
 
 __END__
@@ -310,6 +336,12 @@ Creates a (partial) dispatch table from data passed from the (YAML)-config file.
 =head2 build_dispatcher_from_pod
 
 Creates a (partial) dispatch table from data provided in POD.
+
+=begin pod_coverage
+
+=head2 PLUGIN_NAME
+
+=end pod_coverage
 
 =head1 COPYRIGHT
 

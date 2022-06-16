@@ -1,7 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
 use Plack::Test;
 
 use HTTP::Request;
@@ -35,14 +34,14 @@ subtest "XMLRPC Callback::Fail" => sub {
     ) or diag(explain($response_data));
 };
 
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyXMLRPCAppCallbackFail;
     use lib 'ex/';
     use Dancer2;
     use Dancer2::Plugin::RPC::XMLRPC;
-    use Dancer2::RPCPlugin::CallbackResult::Factory;
+    use Dancer2::RPCPlugin::CallbackResultFactory;
 
     BEGIN { set(log => 'error') }
     xmlrpc '/endpoint' => {

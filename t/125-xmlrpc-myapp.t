@@ -1,7 +1,6 @@
-#! perl -w
-use strict;
-use Test::More;
-use Test::NoWarnings ();
+#! perl -I. -w
+use t::Test::abeltje;
+
 use Plack::Test;
 
 use HTTP::Request;
@@ -123,9 +122,7 @@ subtest "XMLRPC methodList(plugin => 'xmlrpc')" => sub {
     ) or diag(explain($methods));
 };
 
-Test::NoWarnings::had_no_warnings();
-$Test::NoWarnings::do_end_test = 0;
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyAllRPCApp;

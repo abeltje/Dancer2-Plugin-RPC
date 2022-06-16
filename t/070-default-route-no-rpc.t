@@ -225,8 +225,7 @@ note("Send *rubbish* to the working app **with** catch-all");
     );
 }
 
-
-done_testing();
+abeltje_done_testing();
 
 sub as_jsonrpc {
     my ($method, $params) = @_;

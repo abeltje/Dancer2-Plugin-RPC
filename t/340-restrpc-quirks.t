@@ -1,8 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
-use Test::NoWarnings ();
 use Plack::Test;
 
 use Dancer2::RPCPlugin::ErrorResponse;
@@ -57,9 +55,7 @@ subtest "RESTRPC codewrapper returns an object" => sub {
     ) or diag(explain($response));
 };
 
-Test::NoWarnings::had_no_warnings();
-$Test::NoWarnings::do_end_test = 0;
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyRESTRPCApp;

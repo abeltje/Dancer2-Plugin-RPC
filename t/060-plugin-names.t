@@ -59,4 +59,4 @@ use Dancer2::RPCPlugin::PluginNames;
     }
 }
 
-done_testing();
+abeltje_done_testing();

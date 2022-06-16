@@ -1,7 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
 use Plack::Test;
 
 use HTTP::Request;
@@ -83,7 +82,10 @@ subtest "JSONRPC methodList(plugin => 'jsonrpc') /wrong_endpoint" => sub {
     is($response->status_line, "200 OK", "Transport OK");
     is_deeply(
         from_json($response->decoded_content)->{error},
-        {code => -32601, message => "Method 'methodList' not found"},
+        {
+            code    => -32601,
+            message => "Method 'methodList' not found at '/endpoint' (skipped)"
+        },
         "Unknown jsonrpc-method"
     );
 };
@@ -106,7 +108,7 @@ subtest "JSONRPC wrong content-type => 404" => sub {
         or diag(explain($response));
 };
 
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyJSONRPCApp;

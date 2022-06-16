@@ -46,7 +46,7 @@ Named:
 
 =item code => $code_ref [Required]
 
-=item package => $package [Optional]
+=item package => $package [Required]]
 
 =back
 
@@ -60,25 +60,11 @@ Getter for the C<package> attribute
 
 =cut
 
-#sub new {
-#    my $class = shift;
-#    my $self = validate_with(
-#        params => \@_,
-#        spec => {
-#            code    => {optional => 0},
-#            package => {optional => 1},
-#        },
-#        allow_extra => 0,
-#    );
-#    return bless $self, $class;
-#}
-#sub code    { $_[0]->{code} }
-#sub package { $_[0]->{package} // '' }
-
+use namespace::autoclean;
 1;
 
 =head1 COPYRIGHT
 
-(c) MMXVI - Abe Timmerman <abetim@cpan.org>
+E<copy> MMXXII - Abe Timmerman <abetim@cpan.org>
 
 =cut

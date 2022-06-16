@@ -1,10 +1,7 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
-use Test::Fatal;
 use Test::MockObject;
-use Test::NoWarnings ();
 
 use Dancer2::RPCPlugin::DispatchFromPod;
 use Dancer2::RPCPlugin::DispatchItem;
@@ -236,6 +233,4 @@ my $plugin = Test::MockObject->new->set_always(
     ) or diag(explain($restrpc));
 }
 
-Test::NoWarnings::had_no_warnings();
-$Test::NoWarnings::do_end_test = 0;
-done_testing();
+abeltje_done_testing();

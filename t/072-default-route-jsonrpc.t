@@ -126,7 +126,7 @@ note('With catchall unknown endpoint errors');
     );
 }
 
-done_testing();
+abeltje_done_testing();
 
 sub _post {
     my ($endpoint, $body) = @_;

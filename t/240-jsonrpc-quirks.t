@@ -1,7 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
 use Plack::Test;
 
 use HTTP::Request;
@@ -87,7 +86,7 @@ my $tester = Plack::Test->create($app);
         or diag(explain($response));
 }
 
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyJSONRPCApp;

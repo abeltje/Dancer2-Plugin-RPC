@@ -1,7 +1,6 @@
-#! perl -w
-use strict;
+#! perl -I. -w
+use t::Test::abeltje;
 
-use Test::More;
 use Plack::Test;
 
 use HTTP::Request;
@@ -31,21 +30,21 @@ subtest "JSONRPC CodeWrapper" => sub {
     is_deeply(
         $response_data,
         {
-            'code'    => 500,
+            'code'    => -32500,
             'message' => "Codewrapper die()s\n",
         },
         "CodeWrapper die()s"
-    ) or diag(explain($response_data));
+    ) or diag(explain($response));
 };
 
-done_testing();
+abeltje_done_testing();
 
 BEGIN {
     package MyJSONRPCAppCallbackFail;
     use lib 'ex/';
     use Dancer2;
     use Dancer2::Plugin::RPC::JSONRPC;
-    use Dancer2::RPCPlugin::CallbackResult::Factory;
+    use Dancer2::RPCPlugin::CallbackResultFactory;
 
     BEGIN { set(log => 'error') }
     jsonrpc '/endpoint' => {

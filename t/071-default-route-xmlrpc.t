@@ -1,5 +1,6 @@
 #! perl -I. -w
 use t::Test::abeltje;
+
 BEGIN {
     $ENV{DANCER_ENVIRONMENT} = 'test';
     $ENV{DANCER_APPDIR}      = '.';
@@ -119,7 +120,7 @@ note('With catchall unknown endpoint errors');
     );
 }
 
-done_testing();
+abeltje_done_testing();
 
 sub _post {
     my ($endpoint, $body) = @_;

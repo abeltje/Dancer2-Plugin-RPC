@@ -1,8 +1,5 @@
-#! perl -w
-use strict;
-
-use Test::More;
-use Test::NoWarnings ();
+#! perl -I. -w
+use t::Test::abeltje;
 
 use Dancer2::RPCPlugin::DispatchMethodList;
 
@@ -23,7 +20,7 @@ subtest 'Instantiate' => sub {
             );
         }
     }
-    
+
     is_deeply(
         $dml->list_methods('any'),
         $methods,
@@ -43,6 +40,4 @@ subtest 'Instantiate' => sub {
     );
 };
 
-Test::NoWarnings::had_no_warnings();
-$Test::NoWarnings::do_end_test = 0;
-done_testing();
+abeltje_done_testing();
