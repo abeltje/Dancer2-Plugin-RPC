@@ -5,12 +5,12 @@ use Test::Pod::Coverage;
 
 Test::Warnings->import(':no_end_test');
 
-my @Dancer2_imports = sort {
+my @ignore_words = sort {
     length($b) <=> length($a) ||
     $a cmp $b
 } map {chomp($_); $_} <DATA>;
 
-all_pod_coverage_ok({trustme => \@Dancer2_imports});
+all_pod_coverage_ok({ trustme => \@ignore_words });
 
 __DATA__
 ClassHooks

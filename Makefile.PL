@@ -26,7 +26,7 @@ WriteMakefile(
     BUILD_REQUIRES => {
         'Test::Fatal'      => '0.01',
         'Test::MockObject' => '1.20',
-        'Test::More'       => '0.88',    # done_testing()
+        'Test::Simple'     => '0.88',    # done_testing()
         'Test::Warnings'   => '0.030',
     },
 
