@@ -1,9 +1,14 @@
 package Dancer2::RPCPlugin::DispatchMethodList;
-use warnings;
-use strict;
+use Moo;
 
-use Params::ValidationCompiler 'validation_for';
-use Types::Standard qw/ Str StrMatch ArrayRef Int /;
+with qw(
+    Dancer2::RPCPlugin::ValidationTemplates
+    MooX::Params::CompiledValidators
+);
+
+our $VERSION = '2.00';
+
+use Types::Standard qw( HashRef );
 
 =head1 NAME
 
@@ -40,13 +45,19 @@ None!
 
 =cut
 
+has protocol => (
+    is      => 'ro',
+    isa     => HashRef,
+    default => sub { {} },
+);
+
 my $_singleton;
-sub new {
+around new => sub {
     return $_singleton if $_singleton;
 
-    my $class = shift;
-    $_singleton = bless {protocol => {}}, $class;
-}
+    my ($orig, $self) = (shift, shift);
+    $_singleton = $self->$orig(@_);
+};
 
 =head2 $dml->set_partial(%parameters)
 
@@ -72,14 +83,16 @@ Named, list:
 
 sub set_partial {
     my $self = shift;
-    my %args = validation_for(
-        params => {
-            protocol => {type => StrMatch[ qr/^(?:json|xml|rest)rpc$/], optional => 0},
-            endpoint => {type => StrMatch[ qr/^.*$/] , optional => 0},
-            methods  => {type => ArrayRef},
-        }
-    )->(@_);
-    $self->{protocol}{$args{protocol}}{$args{endpoint}} = $args{methods};
+    $self->validate_parameters(
+        {
+            $self->parameter(protocol => $self->Required, {store => \my $protocol}),
+            $self->parameter(endpoint => $self->Required, {store => \my $endpoint}),
+            $self->parameter(methods  => $self->Required, {store => \my $methods}),
+        },
+        { @_ }
+    );
+
+    $self->protocol->{$protocol}{$endpoint} = $methods;
     return $self;
 }
 
@@ -123,19 +136,15 @@ In case of specified C<$protocol>:
 
 sub list_methods {
     my $self = shift;
-    my ($protocol) = validation_for(
-        params => [
-            {
-                type => StrMatch [qr/^(?:any|(?:json|rest|xml)rpc)$/],
-                default => 'any',
-            },
-        ]
-    )->(@_);
+    $self->validate_positional_parameters(
+        [ $self->parameter(any_protocol => $self->Optional, {store => \my $protocol}) ],
+        [ @_ ]
+    );
     if ($protocol eq 'any') {
-        return $self->{protocol};
+        return $self->protocol;
     }
     else {
-        return $self->{protocol}{$protocol};
+        return $self->protocol->{$protocol};
     }
 }
 
@@ -143,6 +152,6 @@ sub list_methods {
 
 =head1 COPYRIGHT
 
-(c) MMXVI - Abe Timmerman <abeltje@cpan.org>
+(c) MMXXII - Abe Timmerman <abeltje@cpan.org>
 
 =cut

@@ -4,6 +4,8 @@ use Moo::Role;
 use Type::Tiny;
 use Types::Standard qw( ArrayRef CodeRef Dict HashRef Maybe Ref Str StrMatch );
 
+use Dancer2::RPCPlugin::PluginNames;
+
 sub ValidationTemplates {
     my $publisher_check = sub {
         my ($value) = @_;
@@ -26,6 +28,7 @@ sub ValidationTemplates {
         code_wrapper => Types::Standard::Optional [CodeRef],
     ];
     my $plugins = Dancer2::RPCPlugin::PluginNames->new->regex;
+    my $any_plugin = qr{(?:any|$plugins)};
     return {
         endpoint => { type => StrMatch [qr{^ [\w/\\%]+ $}x] },
         publish  => {
@@ -35,6 +38,7 @@ sub ValidationTemplates {
         arguments     => { type => Maybe [ArrayRef] },
         settings      => { type => Maybe [HashRef] },
         protocol      => { type => StrMatch [$plugins] },
+        any_protocol  => { type => StrMatch [$any_plugin] },
         methods       => { type => ArrayRef [ StrMatch [qr{ . }x] ] },
         config        => { type => $plugin_config },
         status_map    => { type => HashRef },
