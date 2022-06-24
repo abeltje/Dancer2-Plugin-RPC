@@ -1,51 +1,98 @@
-Changes on 2017-09-06 for repository at:
+Changes on 2022-06-24 for repository at:
   Fetch URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
   Push  URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
 
 Enjoy!
 
-2.00_01 2017-09-06T22:35:57+02:00 (8aeb723 => abeltje)
- - (abeltje, 2 seconds ago) Autocommit for distribution
+2.00_01 2017-09-06T22:35:57+02:00 (e41c8f6 => abeltje)
+ - (abeltje, Wed, 6 Sep 2017 22:35:57 +0200) Autocommit for distribution
    Dancer2::Plugin::RPC 2.00_01 (test)
 
-0.00 2017-04-18T21:45:07+02:00 (0206403 => abeltje)
- - (abeltje, 5 months ago) Initial commit => port of Dancer::Plugin::RPC
+ - (Abe Timmerman, Thu, 9 Jun 2022 17:19:29 +0200) Rename the plugin-role
+   test
 
- - (abeltje, 5 months ago) Arrange for a clean dump of the dispatch-table.
+ - (Abe Timmerman, Thu, 9 Jun 2022 22:51:35 +0200) Refactor CallbackResult.
+
+ - (Abe Timmerman, Fri, 10 Jun 2022 14:38:59 +0200) Upgrade to
+   t::Test::abeltje 1.06
+
+ - (Abe Timmerman, Mon, 13 Jun 2022 09:26:27 +0200) Add the
+   Dancer2::RPCPlugin::PluginNames helper
+ -     Part of making the RPC-plugin system extensible.
+
+ - (Abe Timmerman, Mon, 13 Jun 2022 09:35:18 +0200) Add the
+   Dancer2::RPCPlugin::ValidationTemplates helper
+ -     Part of making the RPC-plugin system extensible.
+
+ - (Abe Timmerman, Mon, 13 Jun 2022 09:40:25 +0200) Add the
+   Dancer2::RPCPlugin::DefaultRoute helper
+ -     This helper will set a default route in order to not return a plain
+   old
+ -     404 in HTML but, either an error for the rpc-protocol or a 404 in
+   plain-text.
+
+ - (Abe Timmerman, Thu, 16 Jun 2022 11:19:25 +0200) Update the example app.
+ -     A bit more structure to the files
+ -     Use Bread::Board
+
+ - (Abe Timmerman, Thu, 16 Jun 2022 12:07:09 +0200) Update the plugin after
+   porting to Dancer2
+ -     - implement lessons learned from the Dancer version
+
+ - (Abe Timmerman, Thu, 23 Jun 2022 10:34:36 +0200) Update to
+   t::Test::abeltje 1.07
+
+ - (Abe Timmerman, Fri, 24 Jun 2022 13:39:48 +0200) Rewrite to use Moo
+
+ - (Abe Timmerman, Fri, 24 Jun 2022 14:16:37 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_02 (same)
+
+0.00 2017-04-18T21:45:07+02:00 (0206403 => abeltje)
+ - (abeltje, Tue, 18 Apr 2017 21:45:07 +0200) Initial commit => port of
+   Dancer::Plugin::RPC
+
+ - (abeltje, Mon, 24 Apr 2017 22:12:28 +0200) Arrange for a clean dump of
+   the dispatch-table.
  -     Dancer2 gives a warning for items logged that are CODE-refs, we know
  -     this data-structure contains them, so resolve by dumpering te
    structure
  -     ourself.
 
- - (abeltje, 3 months ago) Help the example application and my development
+ - (abeltje, Wed, 14 Jun 2017 22:08:33 +0200) Help the example application
+   and my development
  -     carton (lock/snapshot) shouldn't be diffed
  -     ignore the carton stuff for version control
 
- - (abeltje, 3 months ago) Add 'Test::NoWarnings' to 'BUILD_REQUIRES'
+ - (abeltje, Mon, 19 Jun 2017 21:24:00 +0200) Add 'Test::NoWarnings' to
+   'BUILD_REQUIRES'
 
- - (abeltje, 3 months ago) Update the example app.
+ - (abeltje, Mon, 19 Jun 2017 21:50:10 +0200) Update the example app.
 
- - (abeltje, 3 months ago) Objects returned by the codewrapper will be
-   serialised
+ - (abeltje, Mon, 19 Jun 2017 21:55:53 +0200) Objects returned by the
+   codewrapper will be serialised
  -     Blessed variables will be (recursively) flattend into a single
  -     data-structure.
  -     fix tests, amend tests, add tests
 
- - (abeltje, 2 months ago) Changes must be part of any distribution
+ - (abeltje, Mon, 26 Jun 2017 22:01:01 +0200) Changes must be part of any
+   distribution
 
- - (abeltje, 2 months ago) Keep the example in sync with
+ - (abeltje, Mon, 26 Jun 2017 22:03:14 +0200) Keep the example in sync with
    Dancer::Plugin::RPC
 
- - (abeltje, 4 weeks ago) More syncing between the two versions (Dancer1.3
-   and Dancer2)
+ - (abeltje, Thu, 10 Aug 2017 11:56:15 +0200) More syncing between the two
+   versions (Dancer1.3 and Dancer2)
 
- - (abeltje, 4 weeks ago) More bookkeeping...
+ - (abeltje, Thu, 10 Aug 2017 12:00:17 +0200) More bookkeeping...
 
- - (abeltje, 3 weeks ago) Fix regex for argument validation
+ - (abeltje, Wed, 16 Aug 2017 20:04:46 +0200) Fix regex for argument
+   validation
 
- - (abeltje, 4 hours ago) Documentation fixes, complete RESTRPC stuff
+ - (abeltje, Wed, 6 Sep 2017 18:54:12 +0200) Documentation fixes, complete
+   RESTRPC stuff
 
- - (abeltje, 2 hours ago) Introduce explicit endpoints for POD-publishing
+ - (abeltje, Wed, 6 Sep 2017 20:12:50 +0200) Introduce explicit endpoints
+   for POD-publishing
  -     - The Dancer2::RPCPlugin::DispatchFromPod class has a new attribute
  -	 'endpoint', this will be used with the new optional item for
    endpoint
@@ -55,12 +102,14 @@ Enjoy!
  -     - Had to rename the 'plugin' attribute to 'plugin_object' in those
  -	 classes
 
- - (abeltje, 2 hours ago) Fix agent-identifier in http-client.
+ - (abeltje, Wed, 6 Sep 2017 20:21:54 +0200) Fix agent-identifier in
+   http-client.
 
- - (abeltje, 46 minutes ago) Use Params::ValidationCompiler rather than
-   Params::Validate
+ - (abeltje, Wed, 6 Sep 2017 21:50:01 +0200) Use Params::ValidationCompiler
+   rather than Params::Validate
  -     As of June 2017 the author recommends this change.
 
- - (abeltje, 37 minutes ago) Update MANIFEST/MANIFEST.SKIP
+ - (abeltje, Wed, 6 Sep 2017 21:59:00 +0200) Update MANIFEST/MANIFEST.SKIP
 
- - (abeltje, 3 minutes ago) Rename the Plugins back to the Dancer version
+ - (abeltje, Wed, 6 Sep 2017 22:32:30 +0200) Rename the Plugins back to the
+   Dancer version
