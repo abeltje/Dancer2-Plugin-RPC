@@ -1,4 +1,4 @@
-Changes on 2022-06-24 for repository at:
+Changes on 2022-06-25 for repository at:
   Fetch URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
   Push  URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
 
@@ -46,6 +46,11 @@ Enjoy!
 
  - (Abe Timmerman, Fri, 24 Jun 2022 14:16:37 +0200) Autocommit for
    distribution Dancer2::Plugin::RPC 1.99_02 (same)
+
+ - (Abe Timmerman, Sat, 25 Jun 2022 16:22:40 +0200) Fix some dependencies.
+
+ - (Abe Timmerman, Sat, 25 Jun 2022 16:23:09 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_03 (same)
 
 0.00 2017-04-18T21:45:07+02:00 (0206403 => abeltje)
  - (abeltje, Tue, 18 Apr 2017 21:45:07 +0200) Initial commit => port of
