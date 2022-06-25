@@ -12,11 +12,12 @@ WriteMakefile(
     LICENSE       => 'perl',
 
     PREREQ_PM => {
-        'Dancer2'                    => '0.20',
-        'JSON'                       => '2.0',
-        'Params::ValidationCompiler' => '0.24',
-        'RPC::XML'                   => '0.56',
-        'Types::Standard'            => '1.00',
+        'Dancer2'                          => '0.20',
+        'JSON'                             => '2.0',
+        'MooX::Params::CompiledValidators' => '0.05',
+        'RPC::XML'                         => '0.56',
+        'Type::Tiny'                       => '1.01',
+        'namespace::autoclean'             => '0.16',
     },
 
     CONFIGURE_REQUIRES => {
