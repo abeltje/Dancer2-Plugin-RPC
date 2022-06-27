@@ -14,6 +14,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Dancer2'                          => '0.20',
         'JSON'                             => '2.0',
+        'JSON::PP'                         => '4.09', # JSON::PP::Boolean redefined
         'MooX::Params::CompiledValidators' => '0.05',
         'RPC::XML'                         => '0.56',
         'Type::Tiny'                       => '1.01',
