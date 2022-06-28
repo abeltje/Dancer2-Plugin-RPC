@@ -1,6 +1,4 @@
-Changes on 2022-06-25 for repository at:
-  Fetch URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
-  Push  URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
+Changes on 2022-06-28 for repository at:
 
 Enjoy!
 
@@ -51,6 +49,18 @@ Enjoy!
 
  - (Abe Timmerman, Sat, 25 Jun 2022 16:23:09 +0200) Autocommit for
    distribution Dancer2::Plugin::RPC 1.99_03 (same)
+
+ - (Abe Timmerman, Mon, 27 Jun 2022 09:56:20 +0200) Fix typo
+
+ - (Abe Timmerman, Mon, 27 Jun 2022 15:46:48 +0200) Add JSON::PP 4.09 as
+   dependency
+ -     There is some problem with JSON::PP 4.08 with redefine warnings,
+   list
+ -     JSON::PP in the requirements and I can see what happens in the
+ -     smoke-reports.
+
+ - (Abe Timmerman, Tue, 28 Jun 2022 08:31:27 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_04 (same)
 
 0.00 2017-04-18T21:45:07+02:00 (0206403 => abeltje)
  - (abeltje, Tue, 18 Apr 2017 21:45:07 +0200) Initial commit => port of
