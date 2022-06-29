@@ -4,6 +4,22 @@ use v5.10.1;
 
 use ExtUtils::MakeMaker '6.55_02';
 
+my %extra_prereq = ();
+
+# Earlier combinations can result in warnings by overload
+# this won't undo the warning on perl-5.37.2 at the moment
+eval "require Cpanel::JSON::XS";
+unless ($@) {
+    $extra_prereq{'Cpanel::JSON::XS'}  = '4.29';
+    $extra_prereq{'JSON::PP'} = '4.09';
+}
+
+# I saw problems with this on one of the cpantesters reports
+eval "require Cookie::Baker::XS";
+unless ($@) {
+    $extra_prereq{'Cookie::Baker::XS'} = '0.10';
+}
+
 WriteMakefile(
     NAME          => 'Dancer2::Plugin::RPC',
     VERSION_FROM  => 'lib/Dancer2/Plugin/RPC.pm',
@@ -14,11 +30,11 @@ WriteMakefile(
     PREREQ_PM => {
         'Dancer2'                          => '0.20',
         'JSON'                             => '2.0',
-        'JSON::PP'                         => '4.09', # JSON::PP::Boolean redefined
         'MooX::Params::CompiledValidators' => '0.05',
         'RPC::XML'                         => '0.56',
         'Type::Tiny'                       => '1.01',
         'namespace::autoclean'             => '0.16',
+        %extra_prereq,
     },
 
     CONFIGURE_REQUIRES => {
