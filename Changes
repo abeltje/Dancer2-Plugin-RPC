@@ -1,4 +1,6 @@
-Changes on 2022-06-28 for repository at:
+Changes on 2022-06-29 for repository at:
+  Fetch URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
+  Push  URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
 
 Enjoy!
 
@@ -61,6 +63,20 @@ Enjoy!
 
  - (Abe Timmerman, Tue, 28 Jun 2022 08:31:27 +0200) Autocommit for
    distribution Dancer2::Plugin::RPC 1.99_04 (same)
+
+ - (Abe Timmerman, Wed, 29 Jun 2022 12:03:22 +0200) Attempt to	fix the
+   PREREQ_PM stuff
+ -     This is what I have deduced from the cpan-testers reports:
+ -     - When Cpanel::JSON::XS is available the versions of that and
+   JSON::PP
+ -	 can interfere and produce a warning from the overload module.
+ -     - In some cases Cookie::Baker and Cookie::Baker::XS produce a
+   warning,
+ -	 when the XS version is there, set a high enough version in
+   PREREQ_PM
+
+ - (Abe Timmerman, Wed, 29 Jun 2022 12:07:48 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_05 (same)
 
 0.00 2017-04-18T21:45:07+02:00 (0206403 => abeltje)
  - (abeltje, Tue, 18 Apr 2017 21:45:07 +0200) Initial commit => port of
