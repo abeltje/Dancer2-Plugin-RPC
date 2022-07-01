@@ -11,7 +11,6 @@ my %extra_prereq = ();
 eval "require Cpanel::JSON::XS";
 unless ($@) {
     $extra_prereq{'Cpanel::JSON::XS'}  = '4.29';
-    $extra_prereq{'JSON::PP'} = '4.09';
 }
 
 # I saw problems with this on one of the cpantesters reports
@@ -30,6 +29,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Dancer2'                          => '0.20',
         'JSON'                             => '2.0',
+        'JSON::PP'                         => '4.09',
         'MooX::Params::CompiledValidators' => '0.05',
         'RPC::XML'                         => '0.56',
         'Type::Tiny'                       => '1.01',
