@@ -1,66 +1,29 @@
-Changes on 2022-07-01 for repository at:
-  Fetch URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
-  Push  URL: ssh://git@source.test-smoke.org:9999/~/Dancer2-Plugin-RPC
+Changes on 2022-07-11 for repository at:
+  Fetch URL: git@github.com:abeltje/Dancer2-Plugin-RPC.git
+  Push  URL: git@github.com:abeltje/Dancer2-Plugin-RPC.git
 
 Enjoy!
 
-2.00_01 2017-09-06T22:35:57+02:00 (e41c8f6 => abeltje)
- - (abeltje, Wed, 6 Sep 2017 22:35:57 +0200) Autocommit for distribution
-   Dancer2::Plugin::RPC 2.00_01 (test)
+2.01 2022-07-11T09:55:40+02:00 (4be5d93 => Abe Timmerman)
+ - (Abe Timmerman, Mon, 11 Jul 2022 09:55:40 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 2.01 (minor)
 
- - (Abe Timmerman, Thu, 9 Jun 2022 17:19:29 +0200) Rename the plugin-role
-   test
+1.99_06 2022-07-01T13:56:39+02:00 (d60d234 => Abe Timmerman)
+ - (Abe Timmerman, Fri, 1 Jul 2022 13:56:39 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_06 (same)
 
- - (Abe Timmerman, Thu, 9 Jun 2022 22:51:35 +0200) Refactor CallbackResult.
+ - (Abe Timmerman, Mon, 11 Jul 2022 09:51:05 +0200) I screwed up the
+   versioning
+ -     The next release will be 2.01
 
- - (Abe Timmerman, Fri, 10 Jun 2022 14:38:59 +0200) Upgrade to
-   t::Test::abeltje 1.06
+1.99_05 2022-06-29T12:07:48+02:00 (a52ce25 => Abe Timmerman)
+ - (Abe Timmerman, Wed, 29 Jun 2022 12:07:48 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_05 (same)
 
- - (Abe Timmerman, Mon, 13 Jun 2022 09:26:27 +0200) Add the
-   Dancer2::RPCPlugin::PluginNames helper
- -     Part of making the RPC-plugin system extensible.
+ - (Abe Timmerman, Fri, 1 Jul 2022 13:55:46 +0200) It looks like we always
+   need JSON::PP >= 4.09
 
- - (Abe Timmerman, Mon, 13 Jun 2022 09:35:18 +0200) Add the
-   Dancer2::RPCPlugin::ValidationTemplates helper
- -     Part of making the RPC-plugin system extensible.
-
- - (Abe Timmerman, Mon, 13 Jun 2022 09:40:25 +0200) Add the
-   Dancer2::RPCPlugin::DefaultRoute helper
- -     This helper will set a default route in order to not return a plain
-   old
- -     404 in HTML but, either an error for the rpc-protocol or a 404 in
-   plain-text.
-
- - (Abe Timmerman, Thu, 16 Jun 2022 11:19:25 +0200) Update the example app.
- -     A bit more structure to the files
- -     Use Bread::Board
-
- - (Abe Timmerman, Thu, 16 Jun 2022 12:07:09 +0200) Update the plugin after
-   porting to Dancer2
- -     - implement lessons learned from the Dancer version
-
- - (Abe Timmerman, Thu, 23 Jun 2022 10:34:36 +0200) Update to
-   t::Test::abeltje 1.07
-
- - (Abe Timmerman, Fri, 24 Jun 2022 13:39:48 +0200) Rewrite to use Moo
-
- - (Abe Timmerman, Fri, 24 Jun 2022 14:16:37 +0200) Autocommit for
-   distribution Dancer2::Plugin::RPC 1.99_02 (same)
-
- - (Abe Timmerman, Sat, 25 Jun 2022 16:22:40 +0200) Fix some dependencies.
-
- - (Abe Timmerman, Sat, 25 Jun 2022 16:23:09 +0200) Autocommit for
-   distribution Dancer2::Plugin::RPC 1.99_03 (same)
-
- - (Abe Timmerman, Mon, 27 Jun 2022 09:56:20 +0200) Fix typo
-
- - (Abe Timmerman, Mon, 27 Jun 2022 15:46:48 +0200) Add JSON::PP 4.09 as
-   dependency
- -     There is some problem with JSON::PP 4.08 with redefine warnings,
-   list
- -     JSON::PP in the requirements and I can see what happens in the
- -     smoke-reports.
-
+1.99_04 2022-06-28T08:31:27+02:00 (b958ba7 => Abe Timmerman)
  - (Abe Timmerman, Tue, 28 Jun 2022 08:31:27 +0200) Autocommit for
    distribution Dancer2::Plugin::RPC 1.99_04 (same)
 
@@ -75,14 +38,24 @@ Enjoy!
  -	 when the XS version is there, set a high enough version in
    PREREQ_PM
 
- - (Abe Timmerman, Wed, 29 Jun 2022 12:07:48 +0200) Autocommit for
-   distribution Dancer2::Plugin::RPC 1.99_05 (same)
+1.99_03 2022-06-25T16:23:09+02:00 (51e6f6b => Abe Timmerman)
+ - (Abe Timmerman, Sat, 25 Jun 2022 16:23:09 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_03 (same)
 
- - (Abe Timmerman, Fri, 1 Jul 2022 13:55:46 +0200) It looks like we always
-   need JSON::PP >= 4.09
+ - (Abe Timmerman, Mon, 27 Jun 2022 09:56:20 +0200) Fix typo
 
- - (Abe Timmerman, Fri, 1 Jul 2022 13:56:39 +0200) Autocommit for
-   distribution Dancer2::Plugin::RPC 1.99_06 (same)
+ - (Abe Timmerman, Mon, 27 Jun 2022 15:46:48 +0200) Add JSON::PP 4.09 as
+   dependency
+ -     There is some problem with JSON::PP 4.08 with redefine warnings,
+   list
+ -     JSON::PP in the requirements and I can see what happens in the
+ -     smoke-reports.
+
+1.99_02 2022-06-24T14:16:37+02:00 (e039b3b => Abe Timmerman)
+ - (Abe Timmerman, Fri, 24 Jun 2022 14:16:37 +0200) Autocommit for
+   distribution Dancer2::Plugin::RPC 1.99_02 (same)
+
+ - (Abe Timmerman, Sat, 25 Jun 2022 16:22:40 +0200) Fix some dependencies.
 
 0.00 2017-04-18T21:45:07+02:00 (0206403 => abeltje)
  - (abeltje, Tue, 18 Apr 2017 21:45:07 +0200) Initial commit => port of
@@ -150,3 +123,42 @@ Enjoy!
 
  - (abeltje, Wed, 6 Sep 2017 22:32:30 +0200) Rename the Plugins back to the
    Dancer version
+
+ - (abeltje, Wed, 6 Sep 2017 22:35:57 +0200) Autocommit for distribution
+   Dancer2::Plugin::RPC 2.00_01 (test)
+
+ - (Abe Timmerman, Thu, 9 Jun 2022 17:19:29 +0200) Rename the plugin-role
+   test
+
+ - (Abe Timmerman, Thu, 9 Jun 2022 22:51:35 +0200) Refactor CallbackResult.
+
+ - (Abe Timmerman, Fri, 10 Jun 2022 14:38:59 +0200) Upgrade to
+   t::Test::abeltje 1.06
+
+ - (Abe Timmerman, Mon, 13 Jun 2022 09:26:27 +0200) Add the
+   Dancer2::RPCPlugin::PluginNames helper
+ -     Part of making the RPC-plugin system extensible.
+
+ - (Abe Timmerman, Mon, 13 Jun 2022 09:35:18 +0200) Add the
+   Dancer2::RPCPlugin::ValidationTemplates helper
+ -     Part of making the RPC-plugin system extensible.
+
+ - (Abe Timmerman, Mon, 13 Jun 2022 09:40:25 +0200) Add the
+   Dancer2::RPCPlugin::DefaultRoute helper
+ -     This helper will set a default route in order to not return a plain
+   old
+ -     404 in HTML but, either an error for the rpc-protocol or a 404 in
+   plain-text.
+
+ - (Abe Timmerman, Thu, 16 Jun 2022 11:19:25 +0200) Update the example app.
+ -     A bit more structure to the files
+ -     Use Bread::Board
+
+ - (Abe Timmerman, Thu, 16 Jun 2022 12:07:09 +0200) Update the plugin after
+   porting to Dancer2
+ -     - implement lessons learned from the Dancer version
+
+ - (Abe Timmerman, Thu, 23 Jun 2022 10:34:36 +0200) Update to
+   t::Test::abeltje 1.07
+
+ - (Abe Timmerman, Fri, 24 Jun 2022 13:39:48 +0200) Rewrite to use Moo
