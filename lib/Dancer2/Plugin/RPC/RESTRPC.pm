@@ -265,7 +265,7 @@ The publiser key determines the way one connects the rpc-method name with the ac
 This way of publishing requires you to create a dispatch-table in the app's config YAML:
 
     plugins:
-        "RPC::REST":
+        "RPC::RESTRPC":
             '/base_url':
                 'MyProject::Admin':
                     admin.someFunction: rpc_admin_some_function_name
@@ -329,6 +329,6 @@ Creates a cannonical-JSON response.
 
 =head1 COPYRIGHT
 
-(c) MMXVII - Abe Timmerman <abeltje@cpan.org>
+E<copy> MMXVII - Abe Timmerman <abeltje@cpan.org>
 
 =cut

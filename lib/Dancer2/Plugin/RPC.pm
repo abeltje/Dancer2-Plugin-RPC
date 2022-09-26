@@ -14,17 +14,17 @@ Dancer2::Plugin::RPC - Namespace for XMLRPC, JSONRPC2 and RESTRPC plugins
 This module contains plugins for L<Dancer2>: L<Dancer2::Plugin::RPC::XML>,
 L<Dancer2::Plugin::RPC::JSON> and L<Dancer2::Plugin::RPC::REST>.
 
-=head2 Dancer2::Plugin::RPC::XML
+=head2 Dancer2::Plugin::RPC::XMLRPC
 
 This plugin exposes the new keyword C<xmlrpc> that is followed by 2 arguments:
 the endpoint and the arguments to configure the xmlrpc-calls at this endpoint.
 
-=head2 Dancer2::Plugin::RPC::JSON
+=head2 Dancer2::Plugin::RPC::JSONRPC
 
 This plugin exposes the new keyword C<jsonrpc> that is followed by 2 arguments:
 the endpoint and the arguments to configure the jsonrpc-calls at this endpoint.
 
-=head2 Dancer2::Plugin::RPC::REST
+=head2 Dancer2::Plugin::RPC::RESTRPC
 
 This plugin exposes the new keyword C<restrpc> that is followed by 2 arguments:
 the endpoint and the arguments to configure the restrpc-calls at this endpoint.
@@ -42,7 +42,7 @@ The dispatch table is build by endpoint.
 The dispatch table is build from the YAML-config:
 
     plugins:
-        'RPC::XML':
+        'RPC::XMLRPC':
             '/endpoint1':
                 'Module::Name1':
                     method1: sub1

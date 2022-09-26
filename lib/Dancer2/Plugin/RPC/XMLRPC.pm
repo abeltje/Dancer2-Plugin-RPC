@@ -273,7 +273,7 @@ The publiser key determines the way one connects the rpc-method name with the ac
 This way of publishing requires you to create a dispatch-table in the app's config YAML:
 
     plugins:
-        "RPC::XML":
+        "RPC::XMLRPC":
             '/endpoint':
                 'MyProject::Admin':
                     admin.someFunction: rpc_admin_some_function_name
@@ -329,14 +329,6 @@ actual sub-name in the current package.
 
 Serializes the data passed as an xmlrpc response.
 
-=head2 build_dispatcher_from_config
-
-Creates a (partial) dispatch table from data passed from the (YAML)-config file.
-
-=head2 build_dispatcher_from_pod
-
-Creates a (partial) dispatch table from data provided in POD.
-
 =begin pod_coverage
 
 =head2 PLUGIN_NAME
@@ -345,6 +337,6 @@ Creates a (partial) dispatch table from data provided in POD.
 
 =head1 COPYRIGHT
 
-(c) MMXV - Abe Timmerman <abeltje@cpan.org>
+E<copy> MMXV - Abe Timmerman <abeltje@cpan.org>
 
 =cut
