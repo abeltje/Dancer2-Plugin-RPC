@@ -292,11 +292,11 @@ The code_ref you supply, gets the C<arguments> value of the C<%publisher_argumen
 A dispatch-table looks like:
 
     return {
-        'admin_someFuncion' => dispatch_item(
+        'admin_someFuncion' => Dancer2::RPCPlugin::DispatchItem->new(
             package => 'MyProject::Admin',
             code    => MyProject::Admin->can('rpc_admin_some_function_name'),
         ),
-        'user_otherFunction' => dispatch_item(
+        'user_otherFunction' => Dancer2::RPCPlugin::DispatchItem->new(
             package => 'MyProject::User',
             code    => MyProject::User->can('rpc_user_other_function_name'),
         ),
